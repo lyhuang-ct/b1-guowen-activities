@@ -145,16 +145,42 @@
 
       notify('正在上傳截圖並寫入試算表…', 'loading');
 
-      // 使用 text/plain 避免部分環境的 CORS preflight；GAS 仍可從 postData 讀取
-      await fetch(gasUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      });
+      const body = JSON.stringify(payload);
+      // 先用 cors 以便讀取 GAS 回傳錯誤；失敗再 fallback no-cors
+      try {
+        const res = await fetch(gasUrl, {
+          method: 'POST',
+          mode: 'cors',
+          redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body
+        });
+        const text = await res.text();
+        let parsed = null;
+        try { parsed = JSON.parse(text); } catch (_) {}
 
-      notify('✅ 已送出：試算表與雲端硬碟截圖', 'success');
-      return { ok: true, fileName };
+        if (!res.ok) {
+          notify(`送出失敗（HTTP ${res.status}）。請確認 GAS 部署為「任何人」可存取`, 'error');
+          throw new Error(`GAS HTTP ${res.status}`);
+        }
+        if (parsed && parsed.ok === false) {
+          notify(`後端錯誤：${parsed.error || '未知'}（請檢查試算表ID／資料夾ID）`, 'error');
+          throw new Error(parsed.error || 'GAS returned ok:false');
+        }
+        notify('✅ 已送出：試算表與雲端硬碟截圖', 'success');
+        return { ok: true, fileName, response: parsed };
+      } catch (corsErr) {
+        console.warn('[ActivitySubmit] cors 送出失敗，改試 no-cors', corsErr);
+        // no-cors 無法讀回應；若 GAS 權限不足會看起來像成功但其實沒寫入
+        await fetch(gasUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body
+        });
+        notify('已送出（無法確認伺服器回應）。若試算表沒資料，請把 GAS 改為「任何人」並填妥試算表／資料夾 ID 後重新部署', 'warn');
+        return { ok: true, fileName, unverified: true };
+      }
     }
   };
 

@@ -19,15 +19,27 @@
  */
 
 // ★ 請改成您的試算表 ID（試算表網址 /d/ 與 /edit 之間那段）
+// 例：https://docs.google.com/spreadsheets/d/【這一段】/edit
 var SPREADSHEET_ID = '請填入試算表ID';
 
 // ★ 請改成雲端硬碟資料夾 ID（所有活動截圖集中放這裡）
+// 例：https://drive.google.com/drive/folders/【這一段】
 var DRIVE_FOLDER_ID = '請填入雲端硬碟資料夾ID';
+
+function assertConfig_() {
+  if (!SPREADSHEET_ID || SPREADSHEET_ID.indexOf('請填入') === 0) {
+    throw new Error('尚未設定 SPREADSHEET_ID（試算表 ID）');
+  }
+  if (!DRIVE_FOLDER_ID || DRIVE_FOLDER_ID.indexOf('請填入') === 0) {
+    throw new Error('尚未設定 DRIVE_FOLDER_ID（雲端硬碟資料夾 ID）');
+  }
+}
 
 var SHEET_HEADERS = ['作答時間', '班級', '座號', '姓名', '活動名稱', '結果', '補充資訊', '截圖檔名', '截圖連結'];
 
 function doPost(e) {
   try {
+    assertConfig_();
     var raw = (e && e.postData && e.postData.contents) ? e.postData.contents : '{}';
     var data = JSON.parse(raw);
 
@@ -66,10 +78,20 @@ function doPost(e) {
 }
 
 function doGet() {
+  var configOk = true;
+  var configError = '';
+  try {
+    assertConfig_();
+  } catch (err) {
+    configOk = false;
+    configError = String(err);
+  }
   return ContentService
     .createTextOutput(JSON.stringify({
       ok: true,
-      message: 'B1 活動統一後端運作中。請由活動網頁以 POST 送出資料。'
+      message: 'B1 活動統一後端運作中。請由活動網頁以 POST 送出資料。',
+      configOk: configOk,
+      configError: configError
     }))
     .setMimeType(ContentService.MimeType.JSON);
 }
