@@ -139,7 +139,7 @@
           ...payload,
           imageBase64: imageBase64 ? `(${Math.round(imageBase64.length / 1024)} KB base64)` : ''
         });
-        notify('已完成本機模擬（請教師部署 Code.gs 並設定 GAS_URL）', 'warn');
+        notify('已完成本機模擬（尚未連線雲端紀錄）', 'warn');
         return { ok: true, simulated: true, fileName };
       }
 

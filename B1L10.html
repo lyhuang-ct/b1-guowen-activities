@@ -2,7 +2,8 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    <link rel="stylesheet" href="shared/mobile.css">
     <title>你的靈魂屬於哪個明代流派？ - 項脊軒志特輯</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -44,7 +45,7 @@
 <body class="text-amber-900 antialiased min-h-screen flex flex-col items-center justify-center p-0 sm:p-4">
 
     <!-- 主應用容器：限制寬度、手機滿版、電腦置中卡片 -->
-    <div id="app-container" class="max-w-md w-full bg-[#FFFAF0] sm:rounded-3xl warm-shadow overflow-hidden flex flex-col relative h-screen sm:h-[85vh]">
+    <div id="app-container" class="max-w-md w-full bg-[#FFFAF0] sm:rounded-3xl warm-shadow overflow-hidden flex flex-col relative min-h-[100dvh] sm:min-h-0 sm:h-[85vh] mobile-app-shell">
         
         <!-- 區塊 1：教師設定專區 -->
         
@@ -69,7 +70,7 @@
                         如果時光倒流，在那個文壇百家爭鳴的明朝，面對生活的喜怒哀樂，你的性格與選擇，會讓你成為哪一個流派的大師呢？
                     </p>
                     <div class="text-left space-y-3 mb-6">
-                        <div class="flex gap-4">
+                        <div class="flex flex-col sm:flex-row gap-4 mobile-stack">
                             <div class="flex-1">
                                 <label class="block text-sm font-bold text-orange-800 mb-1">班級</label>
                                 <input type="text" id="input-class" placeholder="例: 403" class="w-full p-3 border-2 border-orange-100 rounded-xl focus:border-orange-500 focus:outline-none bg-white/80">
@@ -85,7 +86,7 @@
                         </div>
                         <p id="welcome-error" class="hidden text-sm text-red-600 font-bold text-center">請填寫班級、座號與姓名後再開始</p>
                     </div>
-                    <button onclick="startQuiz()" class="bg-orange-600 text-white font-bold py-4 px-8 rounded-2xl hover:bg-orange-700 shadow-lg text-lg transform transition active:scale-95">推開木門，開始測驗</button>
+                    <button onclick="startQuiz()" class="w-full bg-orange-600 text-white font-bold py-4 px-6 rounded-2xl hover:bg-orange-700 shadow-lg text-lg transform transition active:scale-95 mobile-cta-full">推開木門，開始測驗</button>
 
                     <!-- 教師專用提示 (匯出時會被移除) -->
                     

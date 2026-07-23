@@ -2,7 +2,8 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    <link rel="stylesheet" href="shared/mobile.css">
     <title>教學活動產生器：小王子與狐狸</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;family=Noto+Sans+TC:wght@400;500;700&amp;display=swap" rel="stylesheet">
@@ -86,7 +87,7 @@
                 <h1 class="text-3xl md:text-5xl font-bold text-story-text leading-tight">尋找你的 B612 <br><span class="text-story-orange text-2xl md:text-3xl">《小王子》課前心理測驗</span></h1>
                 <p class="text-lg text-gray-600 max-w-md mx-auto">在我們進入聖修伯里的純真世界之前，先來做個小測驗，看看你的靈魂最貼近故事中的哪位角色吧！</p>
                 <div class="w-full max-w-md mx-auto text-left space-y-4 mt-4">
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mobile-stack">
                         <div>
                             <label class="block text-gray-700 font-bold mb-2 ml-1">班級</label>
                             <input type="text" id="input-class" placeholder="例如：403" class="w-full p-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-story-green focus:bg-white transition outline-none">

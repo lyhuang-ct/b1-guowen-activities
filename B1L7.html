@@ -2,7 +2,8 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    <link rel="stylesheet" href="shared/mobile.css">
     <title>【范進中舉】情境體驗活動</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&amp;display=swap" rel="stylesheet">
@@ -78,12 +79,12 @@
                 <p class="leading-relaxed">銅鑼聲響起，面對人生的巨大轉折，你會作何反應？完成 5 題情境選擇，看看你是《儒林外史》中的哪位經典人物！</p>
             </div>
             <div class="bg-white/80 p-4 rounded chinese-border mb-6 shadow-sm space-y-3 text-left">
-                <div class="flex space-x-4">
-                    <div class="w-1/2">
+                <div class="flex flex-col sm:flex-row gap-4 mobile-stack">
+                    <div class="w-full sm:w-1/2">
                         <label class="block text-sm font-bold mb-1">班級</label>
                         <input type="text" id="input-class" placeholder="例: 403" class="w-full p-3 border border-ancient-border rounded bg-white focus:ring-2 focus:ring-ancient-red outline-none">
                     </div>
-                    <div class="w-1/2">
+                    <div class="w-full sm:w-1/2">
                         <label class="block text-sm font-bold mb-1">座號</label>
                         <input type="text" id="input-seat" placeholder="例: 05" class="w-full p-3 border border-ancient-border rounded bg-white focus:ring-2 focus:ring-ancient-red outline-none">
                     </div>

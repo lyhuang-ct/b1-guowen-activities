@@ -1,0 +1,89 @@
+/**
+ * 學生手機瀏覽共用優化
+ * 請在各活動頁 <head> 引入：<link rel="stylesheet" href="shared/mobile.css">
+ */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+body {
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* 避免 iOS 聚焦輸入框時自動放大；觸控高度至少約 44px */
+input,
+textarea,
+select,
+button {
+  font-size: 16px !important;
+  touch-action: manipulation;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+button,
+[role="button"],
+a.btn-tree,
+.cute-btn,
+.btn-cute,
+.btn-primary,
+.option-btn {
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 手機上歡迎頁班級／座號改直向排列（需搭配 .mobile-stack） */
+@media (max-width: 640px) {
+  .mobile-stack {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  .mobile-stack > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
+  }
+
+  /* 主要開始按鈕盡量滿寬 */
+  .mobile-cta-full {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* 減少過大內距佔用首屏 */
+  .cute-card.p-10,
+  #screen-welcome.p-10 {
+    padding: 1.5rem !important;
+  }
+}
+
+/* 全高殼層改用動態視窗高度，減少 iOS 網址列抖動 */
+.mobile-app-shell {
+  min-height: 100dvh;
+  min-height: 100svh;
+}
+
+@supports (height: 100dvh) {
+  .mobile-app-shell.h-screen,
+  .mobile-app-shell.min-h-screen {
+    height: auto;
+    min-height: 100dvh;
+  }
+}
