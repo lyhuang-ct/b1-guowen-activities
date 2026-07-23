@@ -20,11 +20,11 @@
 
 // ★ 請改成您的試算表 ID（試算表網址 /d/ 與 /edit 之間那段）
 // 例：https://docs.google.com/spreadsheets/d/【這一段】/edit
-var SPREADSHEET_ID = '請填入試算表ID';
+var SPREADSHEET_ID = '1UcG8goh_760N1QVKufCNtflZLL1WUsLDGyBgvur6PK4';
 
-// ★ 請改成雲端硬碟資料夾 ID（所有活動截圖集中放這裡）
+// ★ 雲端硬碟資料夾 ID（所有活動截圖集中放這裡）
 // 例：https://drive.google.com/drive/folders/【這一段】
-var DRIVE_FOLDER_ID = '請填入雲端硬碟資料夾ID';
+var DRIVE_FOLDER_ID = '1EC5I78tMQcGa142kskwwDRx9fzPQwx_h';
 
 function assertConfig_() {
   if (!SPREADSHEET_ID || SPREADSHEET_ID.indexOf('請填入') === 0) {
