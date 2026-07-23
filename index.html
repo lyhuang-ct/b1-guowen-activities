@@ -2,10 +2,12 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f4f1ea">
     <title>115學年度第1學期高一國文課程活動連結樹</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared/mobile.css">
     <script>
         tailwind.config = {
             theme: {
@@ -53,6 +55,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            min-height: 3.5rem;
         }
 
         .btn-tree::after {
@@ -67,13 +70,18 @@
             transition: opacity 0.3s ease;
         }
 
-        a.btn-tree:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: theme('boxShadow.btn-hover');
+        a.btn-tree:active {
+            transform: scale(0.98);
         }
 
-        a.btn-tree:hover::after {
-            opacity: 1;
+        @media (hover: hover) {
+            a.btn-tree:hover {
+                transform: translateY(-3px) scale(1.02);
+                box-shadow: theme('boxShadow.btn-hover');
+            }
+            a.btn-tree:hover::after {
+                opacity: 1;
+            }
         }
 
         .btn-tree-disabled {
@@ -89,47 +97,48 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-3px); }
         }
+
+        .credit-badge {
+            bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+            right: max(0.75rem, env(safe-area-inset-right, 0px));
+        }
     </style>
 </head>
-<body class="min-h-screen flex items-start justify-center p-4 py-8 antialiased">
+<body class="min-h-[100dvh] flex items-start justify-center px-3 pt-4 pb-8 sm:p-4 sm:py-8 antialiased">
 
-    <main class="w-full max-w-md bg-white/80 backdrop-blur-md rounded-3xl shadow-soft p-6 md:p-8 text-center relative border border-white/50">
+    <main class="w-full max-w-md bg-white/80 backdrop-blur-md rounded-3xl shadow-soft p-4 sm:p-8 text-center relative border border-white/50 overflow-hidden">
 
-        <div class="absolute -top-4 -left-4 w-12 h-12 bg-morandi-btn3 rounded-full opacity-60 mix-blend-multiply blur-sm"></div>
-        <div class="absolute -bottom-6 -right-4 w-16 h-16 bg-morandi-btn2 rounded-full opacity-50 mix-blend-multiply blur-sm"></div>
+        <div class="pointer-events-none absolute -top-4 -left-4 w-12 h-12 bg-morandi-btn3 rounded-full opacity-60 mix-blend-multiply blur-sm"></div>
+        <div class="pointer-events-none absolute -bottom-6 -right-4 w-16 h-16 bg-morandi-btn2 rounded-full opacity-50 mix-blend-multiply blur-sm"></div>
 
-        <header class="mb-6 relative z-10">
-            <div class="w-20 h-20 mx-auto mb-3 bg-morandi-card rounded-full flex items-center justify-center shadow-inner border-4 border-white icon-bounce">
-                <span class="text-3xl">📚✨</span>
+        <header class="mb-5 sm:mb-6 relative z-10">
+            <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 bg-morandi-card rounded-full flex items-center justify-center shadow-inner border-4 border-white icon-bounce">
+                <span class="text-2xl sm:text-3xl">📚✨</span>
             </div>
 
-            <h1 class="text-2xl font-bold text-morandi-title mb-2 tracking-wide">
+            <h1 class="text-xl sm:text-2xl font-bold text-morandi-title mb-1 sm:mb-2 tracking-wide">
                 115學年度 第1學期
             </h1>
-            <h2 class="text-lg font-medium text-morandi-text mb-1">
+            <h2 class="text-base sm:text-lg font-medium text-morandi-text mb-1">
                 高一國文課程活動
             </h2>
-            <p class="text-sm text-gray-400">龍騰版高中國文第一冊 · 共 10 課</p>
+            <p class="text-xs sm:text-sm text-gray-400">龍騰版高中國文第一冊 · 共 10 課</p>
         </header>
 
-        <nav id="lesson-nav" class="space-y-3 relative z-10 flex flex-col items-center w-full" aria-label="課程活動列表">
+        <nav id="lesson-nav" class="space-y-2.5 sm:space-y-3 relative z-10 flex flex-col items-center w-full" aria-label="課程活動列表">
             <!-- 由下方 script 依 lessons 資料自動產生完整按鈕 -->
         </nav>
 
-        <footer class="mt-6 text-xs text-gray-400 font-medium tracking-wider uppercase relative z-10">
+        <footer class="mt-5 sm:mt-6 text-[11px] sm:text-xs text-gray-400 font-medium tracking-wider relative z-10 leading-relaxed">
             設計與開發：新北市立明德高中國文科 黃齡瑩老師
         </footer>
     </main>
 
-    <div class="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 text-[10px] sm:text-xs text-morandi-text/80 bg-white/60 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-white/50 pointer-events-none z-50">
+    <div class="credit-badge fixed text-[10px] sm:text-xs text-morandi-text/80 bg-white/60 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-white/50 pointer-events-none z-50 max-w-[70vw] truncate">
         本內容由新北市Gemini Education 輔助生成50%
     </div>
 
     <script>
-        /**
-         * 完整課次清單（B1L1～B1L10）
-         * available: false 表示尚無活動頁（目前缺 B1L6.html）
-         */
         const lessons = [
             { id: 'B1L1', href: 'B1L1.html', title: '尋找你的專屬桃花源', subtitle: '第一課 桃花源記', color: 'bg-morandi-btn4', available: true },
             { id: 'B1L2', href: 'B1L2.html', title: '穿越新月時空', subtitle: '第二課 再別康橋', color: 'bg-morandi-btn3', available: true },
@@ -143,7 +152,7 @@
             { id: 'B1L10', href: 'B1L10.html', title: '明代流派靈魂測驗', subtitle: '第十課 項脊軒志', color: 'bg-morandi-btn10', available: true }
         ];
 
-        const arrowSvg = `<svg class="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>`;
+        const arrowSvg = `<svg class="w-5 h-5 opacity-80 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>`;
 
         const nav = document.getElementById('lesson-nav');
         lessons.forEach((lesson) => {
@@ -154,13 +163,13 @@
                     a.target = '_blank';
                     a.rel = 'noopener noreferrer';
                 }
-                a.className = `btn-tree w-full group flex items-center justify-between p-4 rounded-2xl ${lesson.color} text-white shadow-btn border border-white/20 hover:border-white/50`;
+                a.className = `btn-tree w-full group flex items-center justify-between gap-2 p-3.5 sm:p-4 rounded-2xl ${lesson.color} text-white shadow-btn border border-white/20`;
                 a.innerHTML = `
-                    <div class="flex items-center space-x-3 text-left min-w-0">
-                        <span class="bg-white/20 text-white rounded-lg px-2 py-1 text-xs font-bold font-mono shrink-0">${lesson.id}</span>
+                    <div class="flex items-center space-x-2.5 sm:space-x-3 text-left min-w-0">
+                        <span class="bg-white/20 text-white rounded-lg px-2 py-1 text-[11px] sm:text-xs font-bold font-mono shrink-0">${lesson.id}</span>
                         <div class="min-w-0">
-                            <div class="font-bold text-base leading-tight truncate">${lesson.title}</div>
-                            <div class="text-xs text-white/80 mt-0.5">${lesson.subtitle}${lesson.external ? ' · Padlet' : ''}</div>
+                            <div class="font-bold text-sm sm:text-base leading-snug">${lesson.title}</div>
+                            <div class="text-[11px] sm:text-xs text-white/80 mt-0.5">${lesson.subtitle}${lesson.external ? ' · Padlet' : ''}</div>
                         </div>
                     </div>
                     ${arrowSvg}
@@ -168,18 +177,17 @@
                 nav.appendChild(a);
             } else {
                 const div = document.createElement('div');
-                div.className = `btn-tree btn-tree-disabled w-full flex items-center justify-between p-4 rounded-2xl ${lesson.color} text-white shadow-btn border border-white/20`;
+                div.className = `btn-tree btn-tree-disabled w-full flex items-center justify-between gap-2 p-3.5 sm:p-4 rounded-2xl ${lesson.color} text-white shadow-btn border border-white/20`;
                 div.setAttribute('aria-disabled', 'true');
-                div.title = '此課活動頁尚未建立';
                 div.innerHTML = `
-                    <div class="flex items-center space-x-3 text-left min-w-0">
-                        <span class="bg-white/20 text-white rounded-lg px-2 py-1 text-xs font-bold font-mono shrink-0">${lesson.id}</span>
+                    <div class="flex items-center space-x-2.5 text-left min-w-0">
+                        <span class="bg-white/20 rounded-lg px-2 py-1 text-[11px] font-bold font-mono shrink-0">${lesson.id}</span>
                         <div class="min-w-0">
-                            <div class="font-bold text-base leading-tight truncate">${lesson.title}</div>
-                            <div class="text-xs text-white/80 mt-0.5">${lesson.subtitle} · 頁面尚未建立</div>
+                            <div class="font-bold text-sm leading-snug">${lesson.title}</div>
+                            <div class="text-[11px] text-white/80 mt-0.5">${lesson.subtitle} · 頁面尚未建立</div>
                         </div>
                     </div>
-                    <span class="text-xs font-bold bg-white/25 px-2 py-1 rounded-lg shrink-0">待補</span>
+                    <span class="text-[11px] font-bold bg-white/25 px-2 py-1 rounded-lg shrink-0">待補</span>
                 `;
                 nav.appendChild(div);
             }
