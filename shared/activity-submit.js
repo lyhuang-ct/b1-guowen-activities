@@ -1,16 +1,6 @@
 /**
  * 活動結果送出與截圖上傳共用模組
  * 依賴：html2canvas（CDN）、window.ACTIVITY_CONFIG.GAS_URL
- *
- * 用法：
- *   ActivitySubmit.saveStudent({ className, seat, name })
- *   await ActivitySubmit.submit({
- *     activityId: 'B1L1',
- *     activityName: '尋找你的專屬桃花源',
- *     result: '繁華都會客',
- *     extra: '選填補充',
- *     captureEl: document.getElementById('result-section')
- *   })
  */
 (function (global) {
   const student = { className: '', seat: '', name: '' };
@@ -53,18 +43,98 @@
     });
   }
 
+  function waitFrames(ms) {
+    return new Promise((resolve) => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setTimeout(resolve, ms);
+        });
+      });
+    });
+  }
+
+  function collectIgnoreNodes(root) {
+    const list = [];
+    if (!root) return list;
+    const scope = root.querySelectorAll
+      ? root
+      : document;
+    scope.querySelectorAll('#upload-status, #upload-status-success, [data-capture-ignore]').forEach((n) => list.push(n));
+    return list;
+  }
+
   async function captureToBase64(el) {
     const target = el || document.body;
     const html2canvas = await ensureHtml2Canvas();
-    const canvas = await html2canvas(target, {
-      backgroundColor: '#ffffff',
-      scale: Math.min(2, global.devicePixelRatio || 1.5),
-      useCORS: true,
-      logging: false,
-      windowWidth: target.scrollWidth,
-      windowHeight: target.scrollHeight
+
+    // 等淡入動畫結束，避免截到半透明畫面
+    await waitFrames(900);
+
+    const ignored = collectIgnoreNodes(target);
+    const ignoredPrev = ignored.map((n) => ({
+      n,
+      visibility: n.style.visibility
+    }));
+    ignored.forEach((n) => {
+      n.style.visibility = 'hidden';
     });
-    return canvas.toDataURL('image/png');
+
+    const prev = {
+      animation: target.style.animation,
+      opacity: target.style.opacity,
+      transition: target.style.transition
+    };
+    target.classList.remove('fade-in', 'fade-enter', 'fade-enter-active');
+    target.style.animation = 'none';
+    target.style.transition = 'none';
+    target.style.opacity = '1';
+
+    await waitFrames(80);
+
+    try {
+      const canvas = await html2canvas(target, {
+        backgroundColor: '#ffffff',
+        scale: Math.min(2, global.devicePixelRatio || 1.5),
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        imageTimeout: 5000,
+        onclone: (clonedDoc, clonedEl) => {
+          const nodes = clonedDoc.querySelectorAll('body, body *');
+          nodes.forEach((node) => {
+            node.style.setProperty('opacity', '1', 'important');
+            node.style.setProperty('animation', 'none', 'important');
+            node.style.setProperty('transition', 'none', 'important');
+            node.style.setProperty('filter', 'none', 'important');
+            node.style.setProperty('-webkit-filter', 'none', 'important');
+          });
+
+          // 隱藏狀態列，避免「正在產生畫面截圖…」進圖
+          clonedDoc
+            .querySelectorAll('#upload-status, #upload-status-success, [data-capture-ignore]')
+            .forEach((n) => n.remove());
+
+          if (clonedEl) {
+            clonedEl.style.setProperty('opacity', '1', 'important');
+            clonedEl.style.setProperty('animation', 'none', 'important');
+            clonedEl.style.setProperty('transform', 'none', 'important');
+          }
+
+          // 把結果區半透明底改成實色，提高對比
+          clonedDoc.querySelectorAll('[class*="bg-orange-50"], [class*="bg-gray-50"]').forEach((n) => {
+            n.style.setProperty('background-color', '#fff7ed', 'important');
+          });
+        }
+      });
+      return canvas.toDataURL('image/png');
+    } finally {
+      target.style.animation = prev.animation;
+      target.style.opacity = prev.opacity;
+      target.style.transition = prev.transition;
+      ignoredPrev.forEach(({ n, visibility }) => {
+        n.style.visibility = visibility;
+      });
+    }
   }
 
   function getGasUrl() {
@@ -88,9 +158,6 @@
       return !!(student.className && student.seat && student.name);
     },
 
-    /**
-     * 截圖結果畫面 → 上傳雲端硬碟 → 寫入試算表對應工作表
-     */
     async submit({
       activityId,
       activityName,
@@ -109,11 +176,12 @@
       }
 
       const fileName = buildFileName(activityName);
-      notify('正在產生畫面截圖…', 'loading');
 
+      // 先截圖（不要先改狀態文字，避免被拍進去）
       let imageBase64 = '';
       try {
         imageBase64 = await captureToBase64(captureEl);
+        notify('截圖完成，正在上傳…', 'loading');
       } catch (err) {
         console.error(err);
         notify('截圖失敗，仍會嘗試寫入試算表', 'warn');
@@ -146,7 +214,6 @@
       notify('正在上傳截圖並寫入試算表…', 'loading');
 
       const body = JSON.stringify(payload);
-      // 先用 cors 以便讀取 GAS 回傳錯誤；失敗再 fallback no-cors
       try {
         const res = await fetch(gasUrl, {
           method: 'POST',
@@ -171,14 +238,13 @@
         return { ok: true, fileName, response: parsed };
       } catch (corsErr) {
         console.warn('[ActivitySubmit] cors 送出失敗，改試 no-cors', corsErr);
-        // no-cors 無法讀回應；若 GAS 權限不足會看起來像成功但其實沒寫入
         await fetch(gasUrl, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body
         });
-        notify('已送出（無法確認伺服器回應）。若試算表沒資料，請把 GAS 改為「任何人」並填妥試算表／資料夾 ID 後重新部署', 'warn');
+        notify('已送出（無法確認伺服器回應）。若試算表沒資料，請檢查 GAS 權限設定', 'warn');
         return { ok: true, fileName, unverified: true };
       }
     }
