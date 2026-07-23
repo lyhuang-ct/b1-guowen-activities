@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【古詩漫遊】前世角色測驗與資料收集</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 漢朝古風 + 可愛風 色彩設定 */
+        :root {
+            --paper-bg: #fdf6e3; /* 古紙黃 */
+            --ink-dark: #2c2925; /* 墨黑 */
+            --bamboo-green: #5c7a52; /* 竹綠 */
+            --plum-red: #8b3a3a; /* 梅紅 */
+            --gold-accent: #d4af37;
+        }
+        body {
+            background-color: var(--paper-bg);
+            color: var(--ink-dark);
+            font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M50 0 L100 50 L50 100 L0 50 Z" fill="none" stroke="%23e8dec3" stroke-width="1"/></svg>');
+            background-size: 100px 100px;
+        }
+        .ancient-border {
+            border: 4px solid var(--bamboo-green);
+            border-radius: 16px;
+            box-shadow: 4px 4px 0px var(--plum-red);
+            background-color: rgba(253, 246, 227, 0.95);
+        }
+        .cute-btn {
+            background-color: var(--plum-red);
+            color: white;
+            border: 2px solid var(--ink-dark);
+            border-radius: 20px;
+            padding: 10px 24px;
+            font-weight: bold;
+            transition: all 0.2s;
+            box-shadow: 2px 2px 0px var(--ink-dark);
+        }
+        .cute-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px var(--ink-dark);
+        }
+        .cute-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px var(--ink-dark);
+        }
+        .cute-btn-green {
+            background-color: var(--bamboo-green);
+        }
+        /* 隱藏卷軸但可滾動 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+    <script src="shared/config.js"></script>
+    <script src="shared/activity-submit.js"></script>
+    <script>
+        const ACTIVITY_ID = 'B1L3';
+        const ACTIVITY_NAME = '前世角色測驗';
+
+        // --- 測驗題庫設定 (加入孔雀東南飛角色選項) ---
+        const questions = [
+            {
+                q: "1. 面對突如其來的危機或家庭變故，你會怎麼做？ 🛡️",
+                options: [
+                    { text: "勇敢挺身而出，自己想辦法解決！", type: "mulan" },
+                    { text: "以長輩或領導者的姿態指揮大家，要求絕對服從。", type: "jiaomu" },
+                    { text: "尋求其他親戚或有經驗的人協助。", type: "normal" }
+                ],
+                hint: "💡 國中學過〈木蘭詩〉，木蘭代父從軍是勇敢的選擇；而樂府詩〈孔雀東南飛〉中的焦母則是家中的絕對權威。"
+            },
+            {
+                q: "2. 面對長輩的期望與自己的想法發生嚴重衝突時，你的態度是？ ⚖️",
+                options: [
+                    { text: "覺得親恩浩大，願意順從長輩來報恩。", type: "ciwu" },
+                    { text: "夾在中間左右為難，想兩全其美卻備感無力。", type: "zhongqing" },
+                    { text: "堅守底線，若遭受不公對待寧願決裂也不妥協。", type: "lanzhi" }
+                ],
+                hint: "💡 〈慈烏夜啼〉象徵深厚孝道；而〈孔雀東南飛〉中的焦仲卿與妻子劉蘭芝，則在傳統孝道與愛情間痛苦掙扎。"
+            },
+            {
+                q: "3. 如果跟最愛的人或摯友被迫分隔兩地，很難見面，你會？ 💌",
+                options: [
+                    { text: "時常傳訊息、寫卡片，表達深深的思念與感傷。", type: "sifu" },
+                    { text: "發下重誓，不管多久都絕對不改變自己的心意。", type: "lanzhi" },
+                    { text: "各自努力生活，知道對方平安就好。", type: "normal" }
+                ],
+                hint: "💡 《古詩十九首》充滿分離的思念；而〈孔雀東南飛〉中「蒲葦紉如絲，磐石無轉移」則是堅貞不渝的誓言。"
+            },
+            {
+                q: "4. 面對外來的強勢搭訕或不合理的要求，你會怎麼應對？ 🌸",
+                options: [
+                    { text: "用機智又幽默的方式，巧妙地化解危機。", type: "luofu" },
+                    { text: "態度堅定且嚴正地拒絕，誓死捍衛自己的尊嚴。", type: "lanzhi" },
+                    { text: "默默忍受或試圖委婉求情，希望事情趕快過去。", type: "zhongqing" }
+                ],
+                hint: "💡 漢樂府〈陌上桑〉的羅敷以機智勸退使君；而劉蘭芝則是以生命來捍衛自己的尊嚴。"
+            },
+            {
+                q: "5. 總體來說，你認為自己在群體/家庭中比較偏向什麼樣的角色？ 🛤️",
+                options: [
+                    { text: "守護者：總是為大家遮風擋雨、面對挑戰。", type: "mulan" },
+                    { text: "權威者：定下規矩，希望大家按部就班。", type: "jiaomu" },
+                    { text: "奉獻者：溫柔體貼，心懷感恩地照顧大家。", type: "ciwu" },
+                    { text: "感傷者：心思細膩，容易共情並思念遠方的人。", type: "sifu" }
+                ],
+                hint: "💡 樂府詩與古詩反映了人生百態，每一個特質都能在古典文學中找到共鳴喔！"
+            }
+        ];
+
+        // --- 測驗結果設定 (新增孔雀東南飛角色) ---
+        const results = {
+            mulan: { name: "【堅韌勇敢的 木蘭】", desc: "如同〈木蘭詩〉中的女英雄，你擁有勇敢果決的特質。面對困難不退縮，願意為了保護珍視的人挺身而出！", icon: "🐎" },
+            luofu: { name: "【機智聰慧的 羅敷】", desc: "如同漢樂府〈陌上桑〉中的羅敷，你冰雪聰明，懂得保護自己。面對突發狀況能冷靜應對，用智慧化解危機！", icon: "🌸" },
+            ciwu: { name: "【深情孝順的 慈烏】", desc: "如同〈慈烏夜啼〉中的鳥兒，你擁有一顆溫柔感恩的心。非常看重家庭與恩情，是個溫暖的人。", icon: "🐦" },
+            sifu: { name: "【重情重義的 思婦/遊子】", desc: "如同《古詩十九首》中的主角，你感情豐富且細膩。非常珍惜人際間的羈絆，對朋友充滿真誠的關懷。", icon: "💌" },
+            lanzhi: { name: "【堅貞剛烈的 劉蘭芝】", desc: "如同樂府詩〈孔雀東南飛〉中的劉蘭芝，你才華洋溢且極具自尊。面對不公的對待，寧可玉碎不為瓦全，堅持自己的原則與真愛。", icon: "🦚" },
+            zhongqing: { name: "【兩難煎熬的 焦仲卿】", desc: "如同樂府詩〈孔雀東南飛〉中的焦仲卿，你個性溫和，重情重義。但在面臨衝突時容易陷入兩難，總是試圖尋求平衡，卻往往背負著沉重的壓力。", icon: "⚖️" },
+            jiaomu: { name: "【傳統嚴厲的 焦母】", desc: "如同樂府詩〈孔雀東南飛〉中的焦母，你重視規矩與傳統，擁有極強的控制欲與權威感。你認為一切都應該按照既定的秩序進行。", icon: "🥢" }
+        };
+
+        // --- 全域變數 ---
+        // 加入新角色的計分板
+        let currentQIndex = 0;
+        let scores = { mulan: 0, luofu: 0, ciwu: 0, sifu: 0, lanzhi: 0, zhongqing: 0, jiaomu: 0, normal: 0 };
+        let finalCharacter = "";
+        let activitySubmitStarted = false;
+
+        function setUploadStatus(msg, kind) {
+            ['upload-status', 'upload-status-success'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.textContent = msg;
+                el.className = 'text-sm font-bold min-h-[1.25rem] ' + (
+                    kind === 'success' ? 'text-green-700' :
+                    kind === 'error' ? 'text-red-600' :
+                    kind === 'warn' ? 'text-orange-600' :
+                    kind === 'loading' ? 'text-[#5c7a52]' : 'text-stone-500'
+                );
+            });
+        }
+
+        async function submitActivityResult(extra) {
+            if (activitySubmitStarted) return;
+            activitySubmitStarted = true;
+            try {
+                await ActivitySubmit.submit({
+                    activityId: ACTIVITY_ID,
+                    activityName: ACTIVITY_NAME,
+                    result: finalCharacter,
+                    extra: extra || '',
+                    captureEl: document.getElementById('result-capture-card'),
+                    onStatus: (msg, kind) => setUploadStatus(msg, kind)
+                });
+                showScreen('screen-success');
+            } catch (err) {
+                console.error(err);
+                activitySubmitStarted = false;
+            }
+        }
+
+        // --- 應用程式邏輯 ---
+        function initApp() {
+            ['teacher-setup', 'teacher-preview-bar', 'teacher-export'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            const studentMode = document.getElementById('student-mode');
+            if (studentMode) studentMode.style.display = 'block';
+            showScreen('screen-welcome');
+        }
+
+        function startPreview() {
+            const urlInput = document.getElementById('gas-url-input');
+            if (!urlInput) return;
+            const url = urlInput.value.trim();
+            if (!url.startsWith("https://script.google.com/")) {
+                alert("請輸入正確的 Google Apps Script 網址！");
+                return;
+            }
+            if (window.ACTIVITY_CONFIG) window.ACTIVITY_CONFIG.GAS_URL = url;
+            
+            const setup = document.getElementById('teacher-setup');
+            if (setup) setup.style.display = 'none';
+            const studentMode = document.getElementById('student-mode');
+            if (studentMode) studentMode.style.display = 'block';
+            const previewBar = document.getElementById('teacher-preview-bar');
+            if (previewBar) previewBar.style.display = 'flex';
+            
+            resetStudentMode();
+        }
+
+        function exportCode() {
+            const htmlClone = document.documentElement.cloneNode(true);
+
+            const setupBlock = htmlClone.querySelector('#teacher-setup');
+            const previewBar = htmlClone.querySelector('#teacher-preview-bar');
+            const exportBlock = htmlClone.querySelector('#teacher-export');
+            
+            if(setupBlock) setupBlock.remove();
+            if(previewBar) previewBar.remove();
+            if(exportBlock) exportBlock.remove();
+
+            const studentMode = htmlClone.querySelector('#student-mode');
+            if (studentMode) {
+                studentMode.style.display = 'block';
+                const w = htmlClone.querySelector('#screen-welcome');
+                const q = htmlClone.querySelector('#screen-quiz');
+                const r = htmlClone.querySelector('#screen-result');
+                const s = htmlClone.querySelector('#screen-success');
+                if (w) w.style.display = 'flex';
+                if (q) q.style.display = 'none';
+                if (r) r.style.display = 'none';
+                if (s) s.style.display = 'none';
+            }
+
+            let htmlString = htmlClone.outerHTML;
+            const gasUrl = (window.ACTIVITY_CONFIG && window.ACTIVITY_CONFIG.GAS_URL) || '';
+            htmlString = htmlString.replace(/GAS_URL:\s*""/, `GAS_URL: "${gasUrl}"`);
+
+            const finalCode = `<!DOCTYPE html>\n${htmlString}`;
+            
+            const exportTa = document.getElementById('export-textarea');
+            if (!exportTa) return;
+            exportTa.value = finalCode;
+
+            const liveStudent = document.getElementById('student-mode');
+            if (liveStudent) liveStudent.style.display = 'none';
+            const liveBar = document.getElementById('teacher-preview-bar');
+            if (liveBar) liveBar.style.display = 'none';
+            const liveExport = document.getElementById('teacher-export');
+            if (liveExport) liveExport.style.display = 'block';
+        }
+
+        // --- 學生模式邏輯 ---
+        function showScreen(screenId) {
+            const screens = ['screen-welcome', 'screen-quiz', 'screen-result', 'screen-success'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.style.display = (id === screenId) ? 'flex' : 'none';
+                }
+            });
+        }
+
+        function resetStudentMode() {
+            currentQIndex = 0;
+            scores = { mulan: 0, luofu: 0, ciwu: 0, sifu: 0, lanzhi: 0, zhongqing: 0, jiaomu: 0, normal: 0 };
+            activitySubmitStarted = false;
+            showScreen('screen-welcome');
+        }
+
+        function startQuiz() {
+            const className = document.getElementById('input-class').value.trim();
+            const seat = document.getElementById('input-seat').value.trim();
+            const name = document.getElementById('input-name').value.trim();
+            const errEl = document.getElementById('student-info-error');
+            if (!className || !seat || !name) {
+                if (errEl) errEl.style.display = 'block';
+                return;
+            }
+            if (errEl) errEl.style.display = 'none';
+            ActivitySubmit.saveStudent({ className, seat, name });
+
+            currentQIndex = 0;
+            renderQuestion();
+            showScreen('screen-quiz');
+        }
+
+        function renderQuestion() {
+            const qData = questions[currentQIndex];
+            document.getElementById('q-progress').innerText = `第 ${currentQIndex + 1} / ${questions.length} 題`;
+            document.getElementById('q-text').innerText = qData.q;
+            document.getElementById('q-hint').innerText = qData.hint;
+            
+            const btnContainer = document.getElementById('q-options');
+            btnContainer.innerHTML = '';
+            
+            qData.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full bg-white border-2 border-stone-300 rounded-xl p-4 text-left hover:bg-orange-100 hover:border-[#8b3a3a] transition-all text-lg shadow-sm';
+                btn.innerText = opt.text;
+                btn.onclick = () => answerQuestion(opt.type);
+                btnContainer.appendChild(btn);
+            });
+        }
+
+        function answerQuestion(type) {
+            if (scores[type] !== undefined) {
+                scores[type]++;
+            }
+            
+            currentQIndex++;
+            if (currentQIndex < questions.length) {
+                renderQuestion();
+            } else {
+                calculateResult();
+            }
+        }
+
+        function calculateResult() {
+            let maxScore = -1;
+            let bestChar = 'luofu'; // 預設
+            
+            // 包含新加入的角色進行結算比較
+            const characterTypes = ['mulan', 'luofu', 'ciwu', 'sifu', 'lanzhi', 'zhongqing', 'jiaomu'];
+            
+            characterTypes.forEach(char => {
+                if (scores[char] > maxScore) {
+                    maxScore = scores[char];
+                    bestChar = char;
+                }
+            });
+
+            const res = results[bestChar];
+            finalCharacter = res.name;
+            
+            document.getElementById('res-icon').innerText = res.icon;
+            document.getElementById('res-name').innerText = res.name;
+            document.getElementById('res-desc').innerText = res.desc;
+            
+            showScreen('screen-result');
+            activitySubmitStarted = false;
+            setUploadStatus('', '');
+            requestAnimationFrame(() => {
+                setTimeout(() => submitActivityResult(''), 400);
+            });
+        }
+
+        function copyExportCode() {
+            const textarea = document.getElementById('export-textarea');
+            if (!textarea) return;
+            textarea.select();
+            document.execCommand('copy');
+            alert('✅ 程式碼已複製！請貼上至 Google 協作平台。');
+        }
+
+        function copyGasCode() {
+            const codeEl = document.getElementById('gas-code-block');
+            if (!codeEl) return;
+            const code = codeEl.innerText;
+            const tempArea = document.createElement('textarea');
+            tempArea.value = code;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempArea);
+            alert('✅ Google Apps Script 程式碼已複製！');
+        }
+
+        window.onload = initApp;
+    </script>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.-bottom-6{bottom:-1.5rem}.-left-6{left:-1.5rem}.-right-6{right:-1.5rem}.-top-6{top:-1.5rem}.bottom-0{bottom:0px}.bottom-4{bottom:1rem}.left-0{left:0px}.right-2{right:0.5rem}.right-4{right:1rem}.top-2{top:0.5rem}.z-10{z-index:10}.z-20{z-index:20}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.mt-4{margin-top:1rem}.mt-8{margin-top:2rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-64{height:16rem}.min-h-\[600px\]{min-height:600px}.min-h-screen{min-height:100vh}.w-1\/3{width:33.333333%}.w-2\/3{width:66.666667%}.w-full{width:100%}.max-w-3xl{max-width:48rem}.max-w-4xl{max-width:56rem}.max-w-\[200px\]{max-width:200px}.max-w-md{max-width:28rem}.flex-1{flex:1 1 0%}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.list-inside{list-style-position:inside}.list-decimal{list-style-type:decimal}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-4{gap:1rem}.space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-4 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.rounded{border-radius:0.25rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-b-2{border-bottom-width:2px}.border-l-4{border-left-width:4px}.border-\[\#5c7a52\]{--tw-border-opacity:1;border-color:rgb(92 122 82 / var(--tw-border-opacity, 1))}.border-\[\#8b3a3a\]{--tw-border-opacity:1;border-color:rgb(139 58 58 / var(--tw-border-opacity, 1))}.border-blue-400{--tw-border-opacity:1;border-color:rgb(96 165 250 / var(--tw-border-opacity, 1))}.border-orange-100{--tw-border-opacity:1;border-color:rgb(255 237 213 / var(--tw-border-opacity, 1))}.border-orange-200{--tw-border-opacity:1;border-color:rgb(254 215 170 / var(--tw-border-opacity, 1))}.border-stone-200{--tw-border-opacity:1;border-color:rgb(231 229 228 / var(--tw-border-opacity, 1))}.border-stone-300{--tw-border-opacity:1;border-color:rgb(214 211 209 / var(--tw-border-opacity, 1))}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-orange-100{--tw-bg-opacity:1;background-color:rgb(255 237 213 / var(--tw-bg-opacity, 1))}.bg-orange-50{--tw-bg-opacity:1;background-color:rgb(255 247 237 / var(--tw-bg-opacity, 1))}.bg-stone-100{--tw-bg-opacity:1;background-color:rgb(245 245 244 / var(--tw-bg-opacity, 1))}.bg-stone-300{--tw-bg-opacity:1;background-color:rgb(214 211 209 / var(--tw-bg-opacity, 1))}.bg-stone-50{--tw-bg-opacity:1;background-color:rgb(250 250 249 / var(--tw-bg-opacity, 1))}.bg-stone-900{--tw-bg-opacity:1;background-color:rgb(28 25 23 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-500{--tw-bg-opacity:1;background-color:rgb(234 179 8 / var(--tw-bg-opacity, 1))}.bg-opacity-90{--tw-bg-opacity:0.9}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.pb-2{padding-bottom:0.5rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-6xl{font-size:3.75rem;line-height:1}.text-7xl{font-size:4.5rem;line-height:1}.text-8xl{font-size:6rem;line-height:1}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.leading-relaxed{line-height:1.625}.leading-snug{line-height:1.375}.text-\[\#5c7a52\]{--tw-text-opacity:1;color:rgb(92 122 82 / var(--tw-text-opacity, 1))}.text-\[\#8b3a3a\]{--tw-text-opacity:1;color:rgb(139 58 58 / var(--tw-text-opacity, 1))}.text-stone-400{--tw-text-opacity:1;color:rgb(168 162 158 / var(--tw-text-opacity, 1))}.text-stone-500{--tw-text-opacity:1;color:rgb(120 113 108 / var(--tw-text-opacity, 1))}.text-stone-600{--tw-text-opacity:1;color:rgb(87 83 78 / var(--tw-text-opacity, 1))}.text-stone-700{--tw-text-opacity:1;color:rgb(68 64 60 / var(--tw-text-opacity, 1))}.text-stone-800{--tw-text-opacity:1;color:rgb(41 37 36 / var(--tw-text-opacity, 1))}.text-stone-900{--tw-text-opacity:1;color:rgb(28 25 23 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-yellow-400{--tw-text-opacity:1;color:rgb(250 204 21 / var(--tw-text-opacity, 1))}.underline{-webkit-text-decoration-line:underline;text-decoration-line:underline}.opacity-80{opacity:0.8}.shadow-\[0_-4px_10px_rgba\(0\2c 0\2c 0\2c 0\.2\)\]{--tw-shadow:0 -4px 10px rgba(0,0,0,0.2);--tw-shadow-colored:0 -4px 10px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:border-\[\#8b3a3a\]:hover{--tw-border-opacity:1;border-color:rgb(139 58 58 / var(--tw-border-opacity, 1))}.hover\:bg-stone-400:hover{--tw-bg-opacity:1;background-color:rgb(168 162 158 / var(--tw-bg-opacity, 1))}.hover\:bg-yellow-400:hover{--tw-bg-opacity:1;background-color:rgb(250 204 21 / var(--tw-bg-opacity, 1))}.hover\:bg-orange-100:hover{--tw-bg-opacity:1;background-color:rgb(255 237 213 / var(--tw-bg-opacity, 1))}.hover\:text-stone-800:hover{--tw-text-opacity:1;color:rgb(41 37 36 / var(--tw-text-opacity, 1))}.focus\:border-\[\#5c7a52\]:focus{--tw-border-opacity:1;border-color:rgb(92 122 82 / var(--tw-border-opacity, 1))}.focus\:border-\[\#8b3a3a\]:focus{--tw-border-opacity:1;border-color:rgb(139 58 58 / var(--tw-border-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}@media (min-width: 640px){.sm\:inline{display:inline}.sm\:p-8{padding:2rem}}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}</style></head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- ========================================== -->
+    <!-- 區塊 1：教師設定專區 (#teacher-setup) -->
+    <!-- ========================================== -->
+    
+
+    <!-- ========================================== -->
+    <!-- 區塊 2：學生實際畫面 / 預覽區 (#student-mode) -->
+    <!-- ========================================== -->
+    <div id="student-mode" class="max-w-md w-full mx-auto relative" style="display: block;">
+        <!-- 裝飾元素 -->
+        <div class="absolute -top-6 -left-6 text-4xl opacity-80 z-10">🎋</div>
+        <div class="absolute -bottom-6 -right-6 text-4xl opacity-80 z-10">🏮</div>
+
+        <div class="ancient-border bg-white min-h-[600px] relative overflow-hidden flex flex-col z-20">
+            
+            <!-- 畫面 A：歡迎首頁 -->
+            <div id="screen-welcome" class="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 text-center" style="display: flex;">
+                <div class="text-6xl mb-4">📜</div>
+                <h1 class="text-3xl font-bold text-[#8b3a3a] mb-2 leading-snug">穿越時空的<br>前世角色測驗</h1>
+                <p class="text-stone-600 mb-6 mt-4 font-medium">即將進入「漢魏六朝」的世界，<br>測測看你的個性最像哪首古詩裡的人物？</p>
+                <div class="w-full max-w-sm mx-auto text-left space-y-3 mb-6">
+                    <div>
+                        <label class="block text-sm font-bold text-stone-700 mb-1">班級</label>
+                        <input type="text" id="input-class" placeholder="401" class="w-full p-3 border-2 border-stone-200 rounded-lg focus:border-[#5c7a52] focus:outline-none bg-stone-50">
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="w-1/3">
+                            <label class="block text-sm font-bold text-stone-700 mb-1">座號</label>
+                            <input type="text" id="input-seat" placeholder="05" class="w-full p-3 border-2 border-stone-200 rounded-lg focus:border-[#5c7a52] focus:outline-none bg-stone-50">
+                        </div>
+                        <div class="w-2/3">
+                            <label class="block text-sm font-bold text-stone-700 mb-1">姓名</label>
+                            <input type="text" id="input-name" class="w-full p-3 border-2 border-stone-200 rounded-lg focus:border-[#5c7a52] focus:outline-none bg-stone-50">
+                        </div>
+                    </div>
+                    <p id="student-info-error" style="display: none;" class="text-red-600 text-sm font-bold text-center bg-red-50 py-2 rounded-lg">請填寫班級、座號與姓名才能開始測驗！</p>
+                </div>
+                <button onclick="startQuiz()" class="cute-btn text-xl w-full max-w-[200px] animate-pulse">開始測驗 ✍️</button>
+            </div>
+
+            <!-- 畫面 B：測驗進行中 -->
+            <div id="screen-quiz" class="flex-1 flex flex-col p-6" style="display: none;">
+                <div class="text-center text-sm font-bold text-[#5c7a52] mb-4 bg-orange-100 rounded-full py-1" id="q-progress">第 5 / 5 題</div>
+                <h2 class="text-xl font-bold text-stone-800 mb-6 leading-relaxed" id="q-text">5. 總體來說，你認為自己在群體/家庭中比較偏向什麼樣的角色？ 🛤️</h2>
+                
+                <div id="q-options" class="flex-1 flex flex-col space-y-4 mb-6 justify-center"><button class="w-full bg-white border-2 border-stone-300 rounded-xl p-4 text-left hover:bg-orange-100 hover:border-[#8b3a3a] transition-all text-lg shadow-sm">守護者：總是為大家遮風擋雨、面對挑戰。</button><button class="w-full bg-white border-2 border-stone-300 rounded-xl p-4 text-left hover:bg-orange-100 hover:border-[#8b3a3a] transition-all text-lg shadow-sm">權威者：定下規矩，希望大家按部就班。</button><button class="w-full bg-white border-2 border-stone-300 rounded-xl p-4 text-left hover:bg-orange-100 hover:border-[#8b3a3a] transition-all text-lg shadow-sm">奉獻者：溫柔體貼，心懷感恩地照顧大家。</button><button class="w-full bg-white border-2 border-stone-300 rounded-xl p-4 text-left hover:bg-orange-100 hover:border-[#8b3a3a] transition-all text-lg shadow-sm">感傷者：心思細膩，容易共情並思念遠方的人。</button></div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-3 rounded text-sm text-stone-700" id="q-hint">💡 樂府詩與古詩反映了人生百態，每一個特質都能在古典文學中找到共鳴喔！</div>
+            </div>
+
+            <!-- 畫面 C：測驗結果 -->
+            <div id="screen-result" class="flex-1 flex flex-col items-center justify-center p-6 text-center" style="display: none;">
+                <div id="result-capture-card" class="w-full">
+                <h2 class="text-lg font-bold text-stone-500 mb-2">你的前世靈魂是...</h2>
+                <div class="text-8xl mb-4" id="res-icon">🐎</div>
+                <h1 class="text-3xl font-bold text-[#8b3a3a] mb-4" id="res-name">【堅韌勇敢的 木蘭】</h1>
+                <p class="text-stone-700 leading-relaxed mb-4 bg-orange-50 p-4 rounded-xl border border-orange-200" id="res-desc">如同〈木蘭詩〉中的女英雄，你擁有勇敢果決的特質。面對困難不退縮，願意為了保護珍視的人挺身而出！</p>
+                <p id="upload-status" class="text-sm font-bold text-stone-500 min-h-[1.25rem]"></p>
+                </div>
+            </div>
+
+            <!-- 畫面 D：成功畫面 -->
+            <div id="screen-success" class="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 text-center" style="display: none;">
+                <div class="text-7xl mb-6">🎉</div>
+                <h1 class="text-2xl font-bold text-[#5c7a52] mb-4">報到成功！</h1>
+                <p class="text-stone-600 mb-4">你的資料已經透過飛鴿傳書，<br>順利送達老師的手中了！</p>
+                <p id="upload-status-success" class="text-sm font-bold text-stone-500 min-h-[1.25rem] mb-4"></p>
+                <p class="text-sm text-stone-400">期待接下來的國文課喔！</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 區塊 3：教師預覽浮動控制列 (#teacher-preview-bar) -->
+    <!-- ========================================== -->
+    
+
+    <!-- ========================================== -->
+    <!-- 區塊 4：最終匯出與教學專區 (#teacher-export) -->
+    <!-- ========================================== -->
+    
+
+
+</body></html>

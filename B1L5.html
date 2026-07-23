@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>穿越唐宋：你是哪一位古文大家？</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --paper-bg: #f4f1ea;
+            --ink-color: #2c363f;
+            --stamp-red: #c12c1f;
+            --accent-gold: #c6a87c;
+        }
+        body {
+            font-family: 'Noto Serif TC', serif;
+            background-color: var(--paper-bg);
+            color: var(--ink-color);
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><g fill="%23e8e4d9" fill-opacity="0.4" fill-rule="evenodd"><path d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z"/></g></svg>');
+            overflow-x: hidden;
+        }
+        
+        .title-text {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 0.5em;
+        }
+
+        .btn-primary {
+            background-color: var(--stamp-red);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(193, 44, 31, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background-color: #9e2319;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(193, 44, 31, 0.3);
+        }
+
+        .btn-option {
+            background-color: white;
+            border: 2px solid var(--accent-gold);
+            color: var(--ink-color);
+            transition: all 0.2s ease;
+        }
+
+        .btn-option:hover, .btn-option:active {
+            background-color: var(--accent-gold);
+            color: white;
+        }
+
+        .stamp-border {
+            border: 4px solid var(--stamp-red);
+            padding: 2px;
+            border-radius: 4px;
+        }
+
+        .fade-enter { opacity: 0; transform: translateY(10px); }
+        .fade-enter-active { opacity: 1; transform: translateY(0); transition: opacity 500ms, transform 500ms; }
+        .fade-exit { opacity: 1; }
+        .fade-exit-active { opacity: 0; transition: opacity 300ms; }
+        
+        .spinner {
+            border: 4px solid rgba(198, 168, 124, 0.3);
+            border-top: 4px solid var(--stamp-red);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--accent-gold); border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="w-full max-w-2xl bg-white/80 backdrop-blur-sm shadow-2xl rounded-2xl overflow-hidden relative border border-[#e8e4d9]">
+        
+        <!-- View 1: Login / Intro -->
+        <div id="view-login" class="p-8 md:p-12 flex flex-col items-center justify-center min-h-[500px]">
+            <div class="mb-8 text-center relative">
+                <div class="absolute -top-6 -left-6 text-6xl text-gray-200/50 -z-10 select-none">唐</div>
+                <div class="absolute -bottom-6 -right-6 text-6xl text-gray-200/50 -z-10 select-none">宋</div>
+                <h1 class="text-2xl md:text-3xl font-black mb-4 text-[var(--ink-color)] leading-snug">在開始《師說》之前，<br>先來重新認識這些<br><span class="text-[var(--stamp-red)] text-3xl md:text-4xl">學測也會考的大師們吧！</span></h1>
+                <p class="mt-2 text-gray-600 text-sm md:text-base font-bold">—— 穿越回古代，你會是哪一位古文大家？ ——</p>
+            </div>
+
+            <form id="student-form" class="w-full max-w-sm space-y-4">
+                <div>
+                    <label class="block text-sm font-bold mb-1 text-gray-700">班級 (例如: 401)</label>
+                    <input type="text" id="input-class" required class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[var(--accent-gold)] bg-transparent" placeholder="請輸入班級">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1 text-gray-700">座號 (例如: 05)</label>
+                    <input type="number" id="input-seat" required class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[var(--accent-gold)] bg-transparent" placeholder="請輸入座號">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1 text-gray-700">姓名</label>
+                    <input type="text" id="input-name" required class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[var(--accent-gold)] bg-transparent" placeholder="請輸入姓名">
+                </div>
+                <button type="submit" class="w-full py-3 mt-6 rounded-lg font-bold text-lg btn-primary tracking-widest">開始測驗</button>
+            </form>
+        </div>
+
+        <!-- View 2: Quiz -->
+        <div id="view-quiz" class="hidden p-6 md:p-10 min-h-[500px] flex flex-col relative">
+            <div class="flex justify-between items-center mb-6 text-sm text-gray-500 font-bold border-b-2 border-[var(--accent-gold)] pb-2">
+                <span id="quiz-user-info">101班 05號 王小明</span>
+                <span id="quiz-progress">第 1 / 10 題</span>
+            </div>
+            
+            <div class="flex-grow flex flex-col justify-center">
+                <h3 id="question-text" class="text-xl md:text-2xl font-bold mb-8 leading-relaxed text-center text-[var(--ink-color)]">
+                    <!-- Question will appear here -->
+                </h3>
+                <div id="options-container" class="space-y-4">
+                    <!-- Options will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- View 3: Loading -->
+        <div id="view-loading" class="hidden p-12 flex flex-col items-center justify-center min-h-[500px]">
+            <div class="spinner mb-6"></div>
+            <h2 class="text-2xl font-bold text-[var(--ink-color)] tracking-widest">星象推演中...</h2>
+            <p class="text-gray-500 mt-2">正在分析你的文人靈魂，並回傳成績至太醫院（資料庫）...</p>
+        </div>
+
+        <!-- View 4: Result -->
+        <div id="view-result" class="hidden min-h-[500px] flex flex-col">
+            <!-- Scrollable content -->
+            <div class="flex-grow overflow-y-auto p-6 md:p-10 max-h-[80vh]">
+                <div class="text-center mb-6">
+                    <p class="text-sm text-gray-500 mb-2">你的文人靈魂是...</p>
+                    <div class="inline-block border-b-4 border-[var(--stamp-red)] pb-2 mb-4">
+                        <h1 id="result-name" class="text-4xl md:text-5xl font-black text-[var(--ink-color)] tracking-widest">蘇軾</h1>
+                    </div>
+                    <p id="result-title" class="text-xl font-bold text-[var(--accent-gold)]">樂觀豁達的全才</p>
+                </div>
+
+                <div class="bg-[var(--paper-bg)] border border-[var(--accent-gold)] rounded-xl p-6 shadow-inner space-y-6">
+                    <div>
+                        <h4 class="flex items-center text-lg font-bold text-[var(--stamp-red)] mb-2">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"></path></svg>
+                            文人小檔案
+                        </h4>
+                        <p id="result-bio" class="text-gray-700 leading-relaxed text-justify">
+                            <!-- Bio text -->
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="flex items-center text-lg font-bold text-[var(--stamp-red)] mb-2">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                必讀名作
+                            </h4>
+                            <ul id="result-works" class="list-disc list-inside text-gray-700 space-y-1">
+                                <!-- Works list -->
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="flex items-center text-lg font-bold text-[var(--stamp-red)] mb-2">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                國學代表意義
+                            </h4>
+                            <p id="result-significance" class="text-gray-700 text-sm leading-relaxed">
+                                <!-- Significance -->
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 bg-gray-50 border-t border-gray-200 text-center">
+                <p id="sheet-status" class="text-xs text-green-600 font-bold mb-3">✅ 測驗結果已成功紀錄至點名表！</p>
+                <button onclick="location.reload()" class="w-full md:w-auto px-8 py-2 rounded-lg font-bold text-white bg-gray-800 hover:bg-black transition-colors">再測一次</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared/config.js"></script>
+    <script src="shared/activity-submit.js"></script>
+    <script>
+        // --- 狀態管理 ---
+        const state = {
+            student: { className: '', seatNumber: '', studentName: '' },
+            currentQuestionIndex: 0,
+            scores: {
+                '韓愈': 0, '柳宗元': 0, '歐陽脩': 0, '蘇洵': 0, 
+                '蘇軾': 0, '蘇轍': 0, '王安石': 0, '曾鞏': 0
+            }
+        };
+
+        // --- 10題 測驗題目資料 ---
+        const questions = [
+            {
+                question: "週末好不容易有空，你通常會選擇做什麼？",
+                options: [
+                    { text: "到處吃喝玩樂，探索沒去過的地方！", scores: { '蘇軾': 3, '歐陽脩': 1 } },
+                    { text: "待在家裡讀書或整理筆記，充實自己。", scores: { '曾鞏': 3, '韓愈': 2 } },
+                    { text: "找朋友討論最近發生的時事，發表看法。", scores: { '王安石': 3, '蘇洵': 2 } },
+                    { text: "一個人去爬山或在靜謐的自然中散步。", scores: { '柳宗元': 3, '蘇轍': 1 } }
+                ]
+            },
+            {
+                question: "當你在學習或生活中遭遇重大挫折時，你的反應是？",
+                options: [
+                    { text: "難過一下，但很快就能看開，找到生活中的小確幸。", scores: { '蘇軾': 3, '歐陽脩': 2 } },
+                    { text: "陷入深思，將悲傷轉化為對人生與宇宙的哲學思考。", scores: { '柳宗元': 3, '曾鞏': 1 } },
+                    { text: "絕不認輸！越挫越勇，堅持自己認為對的道路。", scores: { '王安石': 3, '韓愈': 3 } },
+                    { text: "默默忍耐，冷靜分析原因，等待下次重新出發的時機。", scores: { '蘇轍': 3, '蘇洵': 3 } }
+                ]
+            },
+            {
+                question: "在小組報告中，你通常扮演什麼樣的角色？",
+                options: [
+                    { text: "熱心助人的隊長，幫大家分配工作並指導方向。", scores: { '歐陽脩': 3, '韓愈': 1 } },
+                    { text: "點子王，總是能提出天馬行空且有趣的創意。", scores: { '蘇軾': 3, '王安石': 1 } },
+                    { text: "神隊友，仔細檢查錯字、排版，確保報告結構完美。", scores: { '曾鞏': 3, '蘇轍': 3 } },
+                    { text: "嚴肅的監督者，確保大家都照著規則和進度走。", scores: { '王安石': 3, '蘇洵': 1 } }
+                ]
+            },
+            {
+                question: "如果你要寫一篇文章說服別人，你會採用哪種風格？",
+                options: [
+                    { text: "氣勢磅礡，直言不諱，氣場壓倒對方！", scores: { '韓愈': 3, '王安石': 2 } },
+                    { text: "條理分明，邏輯嚴密，讓人找不到破綻。", scores: { '蘇洵': 3, '曾鞏': 3 } },
+                    { text: "幽默風趣，多用比喻，讓人在笑聲中認同我。", scores: { '蘇軾': 3, '歐陽脩': 2 } },
+                    { text: "文辭溫雅厚重，委婉卻堅定地表達立場。", scores: { '蘇轍': 3, '柳宗元': 1 } }
+                ]
+            },
+            {
+                question: "你認為人生的終極目標應該是什麼？",
+                options: [
+                    { text: "改變世界，推行我的理想，讓社會變得更好。", scores: { '王安石': 3, '蘇洵': 2 } },
+                    { text: "快樂過好每一天，享受美食、藝術與友誼。", scores: { '蘇軾': 3, '歐陽脩': 1 } },
+                    { text: "建立良好的品德榜樣，傳承知識，影響後世。", scores: { '韓愈': 3, '曾鞏': 2 } },
+                    { text: "追求心靈的平靜，理解萬物運行的自然規律。", scores: { '柳宗元': 3, '蘇轍': 2 } }
+                ]
+            },
+            {
+                question: "面對一個極具挑戰性的新任務，你的第一反應是？",
+                options: [
+                    { text: "摩拳擦掌，覺得這是證明自己實力的好機會！", scores: { '王安石': 3, '韓愈': 2 } },
+                    { text: "仔細評估風險，擬定周全的計畫後再行動。", scores: { '曾鞏': 3, '蘇轍': 3 } },
+                    { text: "找幾個志同道合的朋友一起集思廣益，輕鬆解決。", scores: { '蘇軾': 3, '歐陽脩': 2 } },
+                    { text: "觀察大局，找出最核心的關鍵點，一語道破。", scores: { '蘇洵': 3, '柳宗元': 2 } }
+                ]
+            },
+            {
+                question: "你平時在社群媒體上最喜歡發布哪種類型的內容？",
+                options: [
+                    { text: "旅遊風景、美食分享，記錄生活的美好瞬間。", scores: { '蘇軾': 3, '柳宗元': 2 } },
+                    { text: "對時事新聞的犀利評論，或是長篇大論的分析。", scores: { '蘇洵': 3, '王安石': 2 } },
+                    { text: "分享讀書心得、有啟發性的名言佳句。", scores: { '曾鞏': 3, '韓愈': 2 } },
+                    { text: "和朋友的溫馨合照，或是感謝他人的貼文。", scores: { '歐陽脩': 3, '蘇轍': 2 } }
+                ]
+            },
+            {
+                question: "朋友之間發生爭執，你會如何處理？",
+                options: [
+                    { text: "擔任和事佬，溫和地化解雙方的矛盾。", scores: { '歐陽脩': 3, '蘇轍': 3 } },
+                    { text: "講究道理，幫忙分析誰對誰錯，絕不偏袒。", scores: { '王安石': 3, '曾鞏': 2 } },
+                    { text: "用幽默的笑話緩解氣氛，讓大家重新笑出來。", scores: { '蘇軾': 3, '柳宗元': 1 } },
+                    { text: "直言指出雙方的問題，要求他們立刻冷靜。", scores: { '韓愈': 3, '蘇洵': 2 } }
+                ]
+            },
+            {
+                question: "如果要送一份禮物給好朋友，你會選擇？",
+                options: [
+                    { text: "自己親手製作的手工藝品或親筆寫的卡片。", scores: { '蘇轍': 3, '歐陽脩': 2 } },
+                    { text: "一本能夠幫助他成長或解決問題的好書。", scores: { '曾鞏': 3, '韓愈': 2 } },
+                    { text: "實用且高效率的工具，能立刻派上用場。", scores: { '王安石': 3, '蘇洵': 2 } },
+                    { text: "帶他去吃一頓大餐，或是一起去一趟小旅行。", scores: { '蘇軾': 3, '柳宗元': 2 } }
+                ]
+            },
+            {
+                question: "關於未來的夢想，你最看重的是什麼？",
+                options: [
+                    { text: "能夠在自己的領域留下深遠的影響，名留青史。", scores: { '韓愈': 3, '蘇洵': 2 } },
+                    { text: "改變不公平的現狀，建立更理想的社會制度。", scores: { '王安石': 3, '柳宗元': 2 } },
+                    { text: "擁有自由自在的人生，不受拘束地體驗世界。", scores: { '蘇軾': 3, '歐陽脩': 2 } },
+                    { text: "安穩踏實地過日子，保護好身邊愛我的人。", scores: { '蘇轍': 3, '曾鞏': 2 } }
+                ]
+            }
+        ];
+
+        // --- 唐宋八大家詳細資料 (適合高一程度) ---
+        const mastersData = {
+            '蘇軾': {
+                title: '樂觀豁達的全方位天才',
+                bio: '字子瞻，號東坡居士。他是宋代文學最高成就的代表，詩、詞、文、書、畫樣樣精通。他的一生經歷了多次政治貶謫（如黃州、惠州、儋州），但無論被貶到哪裡，他都能保持樂觀豁達的心態，愛吃愛玩，甚至發明了「東坡肉」。他的個性幽默風趣，對生活充滿熱情。',
+                works: ['〈赤壁賦〉：在貶謫黃州時的生命體悟。', '〈記承天夜遊〉：展現他與好友隨性賞月的閒情逸致。', '〈念奴嬌·赤壁懷古〉：千古傳誦的豪放派詞作。'],
+                significance: '蘇軾拓展了宋詞的境界，使其從「婉約」走向「豪放」。他的散文自然流暢，如行雲流水，位列唐宋八大家之一。他面對逆境時展現的「曠達」人生觀，深深影響了後世無數文人。'
+            },
+            '王安石': {
+                title: '堅定不移的硬核改革家',
+                bio: '字介甫，號半山。宋神宗時期的宰相，推行著名的「熙寧變法」。他性格倔強，堅持己見，只要認為是對的，就算被全天下反對也要去做，因此被當時的人稱為「拗相公」。他不僅是政治家，也是傑出的文學家，文章注重實用，不尚空談。',
+                works: ['〈遊褒禪山記〉：藉由遊山感悟「世之奇偉、瑰怪、非常之觀，常在於險遠」。', '〈傷仲永〉：探討後天教育的重要性。', '〈泊船瓜洲〉：著名詩作，「春風又綠江南岸」為千古名句。'],
+                significance: '他的散文風格峭拔挺拔，邏輯嚴密，極具說服力。在文學史上，他主張文章應為政治與社會現實服務，反對華而不實的文風。'
+            },
+            '韓愈': {
+                title: '氣勢磅礴的文壇開創者',
+                bio: '字退之，世稱韓昌黎。他是中唐時期「古文運動」的發起人，大力反對當時只重形式、內容空洞的駢文，提倡學習先秦兩漢言之有物的散文。他個性剛直，敢於直言進諫，曾因《論佛骨表》被貶至潮州。',
+                works: ['〈師說〉：尊師重道的千古名篇，破除當時「恥學於師」的歪風。', '〈祭十二郎文〉：被譽為「祭文之絕唱」，真情流露。', '〈左遷至藍關示姪孫湘〉：展現忠君愛國與無奈的著名詩作。'],
+                significance: '蘇軾稱讚他「文起八代之衰，道濟天下之溺」。他不僅是唐宋八大家之首，更成功扭轉了數百年的文學風氣，確立了散文在中國文學史上的正統地位。'
+            },
+            '柳宗元': {
+                title: '深刻內省的孤獨哲學家',
+                bio: '字子厚，與韓愈共同倡導古文運動，並稱「韓柳」。他因參與政治革新失敗，被貶為永州司馬，後又貶至柳州。在被貶的漫長歲月裡，他將內心的抑鬱與孤獨寄託於山水之間，寫下了無數動人的遊記與寓言。',
+                works: ['〈始得西山宴遊記〉等「永州八記」：山水遊記的巔峰之作。', '〈捕蛇者說〉：反映民間疾苦，深刻批判苛政。', '〈江雪〉：「千山鳥飛絕，萬徑人蹤滅」描寫極致的孤傲。'],
+                significance: '柳宗元是中國古代山水遊記散文的奠基者。他將個人的主觀情感與客觀的自然景物完美結合，做到「情景交融」，並讓散文帶有深厚的哲學意味。'
+            },
+            '歐陽脩': {
+                title: '提攜後進的溫文領袖',
+                bio: '字永叔，號醉翁、六一居士。他是北宋文壇的領袖，性格寬厚和藹。他最偉大的貢獻之一，就是在擔任科舉考官時，大力提拔了蘇軾、蘇轍、曾鞏等人，可以說是唐宋八大家中其他幾位宋代文人的「伯樂」。',
+                works: ['〈醉翁亭記〉：與民同樂的經典，文中「醉翁之意不在酒」成為名言。', '〈秋聲賦〉：將無形的秋聲化為具體的聽覺享受。', '〈賣油翁〉：說明「熟能生巧」的道理。'],
+                significance: '他是北宋古文運動的實際領導者，文章風格平易流暢、委婉多姿，奠定了宋代散文的基本風貌，有別於唐代散文的氣勢奇崛。'
+            },
+            '蘇洵': {
+                title: '大器晚成的犀利謀略家',
+                bio: '字明允，號老泉。他是蘇軾與蘇轍的父親（合稱三蘇）。特別的是，他到27歲才開始發憤讀書。他精通歷史，尤其擅長寫作分析天下大勢的政論文，文筆鋒利，帶有戰國時期縱橫家的氣場。',
+                works: ['〈六國論〉：藉由分析戰國六國滅亡的原因，暗中諷刺北宋朝廷對外族妥協的政策。', '〈管仲論〉、〈辨奸論〉：展現其獨到的政治眼光。'],
+                significance: '在八大家中，他的文章以政論見長，邏輯嚴密，氣勢逼人，證明了只要有心向學，無論多晚開始都能成大器。'
+            },
+            '蘇轍': {
+                title: '穩健踏實的溫柔守護者',
+                bio: '字子由，蘇軾的弟弟。相較於哥哥的鋒芒畢露與隨性，蘇轍的性格更加沉穩內斂、踏實謹慎。在蘇軾多次被貶遇難時，蘇轍總是盡力營救、默默守護哥哥，兄弟倆感情極深。',
+                works: ['〈黃州快哉亭記〉：為哥哥的朋友所建的亭子作記，抒發曠達胸懷。', '〈上樞密韓太尉書〉：年輕時為了結交名士所寫的自薦信。'],
+                significance: '他的文章風格被評為「汪洋澹泊」，溫雅厚重，不以氣勢凌人，而是以理服人，在宋代散文中自成一家。'
+            },
+            '曾鞏': {
+                title: '嚴謹篤實的模範學者',
+                bio: '字子固，歐陽脩的得意門生。他為人踏實篤厚，專心治學。相較於蘇軾的才氣縱橫，曾鞏更講究法度與規矩。他的文章結構極為嚴謹，條理分明，沒有多餘的廢話，是標準的「好學生」典範。',
+                works: ['〈墨池記〉：藉由王羲之洗筆池的傳說，勉勵學子勤學苦練。', '〈遊州橋記〉：展現其嚴謹的敘事風格。'],
+                significance: '由於他的文章結構嚴密、起承轉合有條不紊，明清時期的學者非常推崇他，將他的散文視為學習寫作（甚至後來的八股文）的最佳範本。'
+            }
+        };
+
+        // --- DOM Elements ---
+        const views = {
+            login: document.getElementById('view-login'),
+            quiz: document.getElementById('view-quiz'),
+            loading: document.getElementById('view-loading'),
+            result: document.getElementById('view-result')
+        };
+
+        function switchView(viewName) {
+            Object.values(views).forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('fade-enter', 'fade-enter-active');
+            });
+            const activeView = views[viewName];
+            activeView.classList.remove('hidden');
+            activeView.classList.add('fade-enter');
+            
+            // Trigger reflow
+            void activeView.offsetWidth;
+            activeView.classList.add('fade-enter-active');
+        }
+
+        document.getElementById('student-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            state.student.className = document.getElementById('input-class').value.trim();
+            state.student.seatNumber = document.getElementById('input-seat').value.trim();
+            state.student.studentName = document.getElementById('input-name').value.trim();
+
+            ActivitySubmit.saveStudent({
+                className: state.student.className,
+                seat: state.student.seatNumber,
+                name: state.student.studentName
+            });
+
+            document.getElementById('quiz-user-info').textContent = 
+                `${state.student.className}班 ${state.student.seatNumber}號 ${state.student.studentName}`;
+            
+            renderQuestion();
+            switchView('quiz');
+        });
+
+        function renderQuestion() {
+            const q = questions[state.currentQuestionIndex];
+            document.getElementById('quiz-progress').textContent = `第 ${state.currentQuestionIndex + 1} / ${questions.length} 題`;
+            document.getElementById('question-text').textContent = q.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-4 rounded-xl font-bold btn-option shadow-sm';
+                btn.textContent = `${String.fromCharCode(65 + index)}. ${opt.text}`;
+                btn.onclick = () => handleAnswer(opt.scores);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(scores) {
+            // Add scores
+            for (const [master, score] of Object.entries(scores)) {
+                state.scores[master] += score;
+            }
+
+            state.currentQuestionIndex++;
+
+            if (state.currentQuestionIndex < questions.length) {
+                renderQuestion();
+            } else {
+                processResult();
+            }
+        }
+
+        function processResult() {
+            switchView('loading');
+            
+            // Calculate highest score
+            let highestScore = -1;
+            let resultMaster = '';
+            
+            for (const [master, score] of Object.entries(state.scores)) {
+                if (score > highestScore) {
+                    highestScore = score;
+                    resultMaster = master;
+                }
+            }
+
+            // Simulate loading time for suspense
+            setTimeout(() => {
+                showResult(resultMaster);
+                submitToGoogleSheet(resultMaster);
+            }, 2000);
+        }
+
+        function showResult(masterName) {
+            const data = mastersData[masterName];
+            
+            document.getElementById('result-name').textContent = masterName;
+            document.getElementById('result-title').textContent = data.title;
+            document.getElementById('result-bio').textContent = data.bio;
+            document.getElementById('result-significance').textContent = data.significance;
+            
+            const worksList = document.getElementById('result-works');
+            worksList.innerHTML = '';
+            data.works.forEach(work => {
+                const li = document.createElement('li');
+                li.className = 'mb-1';
+                li.innerHTML = work.replace(/〈(.*?)〉/g, '<span class="font-bold text-[var(--ink-color)]">〈$1〉</span>');
+                worksList.appendChild(li);
+            });
+
+            switchView('result');
+        }
+
+        function applySheetStatus(msg, kind) {
+            const statusEl = document.getElementById('sheet-status');
+            statusEl.textContent = msg;
+            statusEl.className = 'text-xs font-bold mb-3 ';
+            if (kind === 'success') statusEl.classList.add('text-green-600');
+            else if (kind === 'error') statusEl.classList.add('text-red-600');
+            else if (kind === 'warn') statusEl.classList.add('text-orange-500');
+            else statusEl.classList.add('text-yellow-600');
+        }
+
+        async function submitToGoogleSheet(resultName) {
+            applySheetStatus('🔄 正在將結果回傳至資料庫...', 'loading');
+            try {
+                await ActivitySubmit.submit({
+                    activityId: 'B1L5',
+                    activityName: '唐宋八大家溫故知新',
+                    result: resultName,
+                    captureEl: document.getElementById('view-result'),
+                    onStatus: (msg, kind) => applySheetStatus(msg, kind)
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    </script>
+</body>
+</html>

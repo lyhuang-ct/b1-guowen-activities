@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>穿越新月時空！課前活動產生器</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Google Fonts: 圓體 (可愛風) & 明體 (文青感) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&amp;family=Noto+Serif+TC:wght@600;900&amp;display=swap" rel="stylesheet">
+    <!-- 引入 Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web" crossorigin="anonymous"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/thin/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/light/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/duotone/style.css">
+
+    <style>
+        :root {
+            --font-cute: 'M PLUS Rounded 1c', sans-serif;
+            --font-serif: 'Noto Serif TC', serif;
+            --color-bg: #FFF5E1;      
+            --color-primary: #FFB6C1; 
+            --color-primary-dark: #FF69B4; 
+            --color-secondary: #87CEEB; 
+            --color-secondary-dark: #4682B4; 
+            --color-text: #5C4033;    
+        }
+        
+        body {
+            font-family: var(--font-cute);
+            background-color: var(--color-bg);
+            background-image: radial-gradient(#FFE4E1 2px, transparent 2px);
+            background-size: 30px 30px;
+            color: var(--color-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            margin: 0;
+            padding-bottom: 80px; /* 留空間給預覽控制列 */
+        }
+
+        .font-serif-tc { font-family: var(--font-serif); }
+
+        .cute-card {
+            background-color: white;
+            border-radius: 2rem;
+            border: 4px solid var(--color-primary);
+            box-shadow: 8px 8px 0px #FFE4E1;
+            transition: all 0.3s ease;
+        }
+
+        .cute-btn {
+            background-color: var(--color-primary);
+            color: white;
+            font-weight: 800;
+            border-radius: 9999px;
+            padding: 0.75rem 2rem;
+            box-shadow: 0 6px 0px var(--color-primary-dark);
+            transition: all 0.1s ease;
+            text-align: center;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .cute-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0px var(--color-primary-dark);
+        }
+        .cute-btn-blue {
+            background-color: var(--color-secondary);
+            box-shadow: 0 6px 0px var(--color-secondary-dark);
+        }
+        .cute-btn-blue:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0px var(--color-secondary-dark);
+        }
+        .cute-btn-green {
+            background-color: #4ade80;
+            box-shadow: 0 6px 0px #16a34a;
+        }
+        .cute-btn-green:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0px #16a34a;
+        }
+
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            background-color: white;
+            border: 3px solid #f3f4f6;
+            border-radius: 1.5rem;
+            padding: 1.25rem;
+            font-size: 1.125rem;
+            color: var(--color-text);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .option-btn:hover {
+            border-color: var(--color-secondary);
+            background-color: #F0F8FF;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .bounce-in { animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .float-anim { animation: float 3s ease-in-out infinite; }
+        
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .hidden-cute { display: none !important; }
+        
+        /* 程式碼區塊樣式 */
+        .code-block {
+            background-color: #282c34;
+            color: #abb2bf;
+            font-family: monospace;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.-bottom-5{bottom:-1.25rem}.-left-10{left:-2.5rem}.-right-5{right:-1.25rem}.-right-6{right:-1.5rem}.-top-10{top:-2.5rem}.-top-6{top:-1.5rem}.bottom-0{bottom:0px}.left-0{left:0px}.right-0{right:0px}.right-2{right:0.5rem}.right-4{right:1rem}.top-0{top:0px}.top-2{top:0.5rem}.top-4{top:1rem}.z-10{z-index:10}.z-40{z-index:40}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-10{margin-bottom:2.5rem}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.mt-10{margin-top:2.5rem}.mt-4{margin-top:1rem}.mr-2{margin-right:0.5rem}.block{display:block}.flex{display:flex}.grid{display:grid}.h-10{height:2.5rem}.h-32{height:8rem}.h-4{height:1rem}.h-6{height:1.5rem}.h-64{height:16rem}.h-full{height:100%}.min-h-\[300px\]{min-height:300px}.w-1\/2{width:50%}.w-10{width:2.5rem}.w-32{width:8rem}.w-6{width:1.5rem}.w-\[20\%\]{width:20%}.w-full{width:100%}.max-w-2xl{max-width:42rem}.max-w-4xl{max-width:56rem}.max-w-5xl{max-width:64rem}.shrink-0{flex-shrink:0}.-translate-x-1\/2{--tw-translate-x:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-1\/2{--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-x-1\/2{--tw-translate-x:50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-y-1\/2{--tw-translate-y:50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-x-full{--tw-translate-x:100%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-rotate-12{--tw-rotate:-12deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.rotate-12{--tw-rotate:12deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.scale-95{--tw-scale-x:.95;--tw-scale-y:.95;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.resize-none{resize:none}.flex-col{flex-direction:column}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-8{gap:2rem}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.whitespace-nowrap{white-space:nowrap}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border-2{border-width:2px}.border-4{border-width:4px}.border-t-2{border-top-width:2px}.border-t-4{border-top-width:4px}.border-blue-100{--tw-border-opacity:1;border-color:rgb(219 234 254 / var(--tw-border-opacity, 1))}.border-blue-200{--tw-border-opacity:1;border-color:rgb(191 219 254 / var(--tw-border-opacity, 1))}.border-gray-100{--tw-border-opacity:1;border-color:rgb(243 244 246 / var(--tw-border-opacity, 1))}.border-orange-100{--tw-border-opacity:1;border-color:rgb(255 237 213 / var(--tw-border-opacity, 1))}.border-pink-100{--tw-border-opacity:1;border-color:rgb(252 231 243 / var(--tw-border-opacity, 1))}.border-pink-200{--tw-border-opacity:1;border-color:rgb(251 207 232 / var(--tw-border-opacity, 1))}.border-green-200{--tw-border-opacity:1;border-color:rgb(187 247 208 / var(--tw-border-opacity, 1))}.bg-\[\#282c34\]{--tw-bg-opacity:1;background-color:rgb(40 44 52 / var(--tw-bg-opacity, 1))}.bg-blue-100{--tw-bg-opacity:1;background-color:rgb(219 234 254 / var(--tw-bg-opacity, 1))}.bg-blue-200{--tw-bg-opacity:1;background-color:rgb(191 219 254 / var(--tw-bg-opacity, 1))}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-orange-50{--tw-bg-opacity:1;background-color:rgb(255 247 237 / var(--tw-bg-opacity, 1))}.bg-pink-400{--tw-bg-opacity:1;background-color:rgb(244 114 182 / var(--tw-bg-opacity, 1))}.bg-pink-50{--tw-bg-opacity:1;background-color:rgb(253 242 248 / var(--tw-bg-opacity, 1))}.bg-pink-500{--tw-bg-opacity:1;background-color:rgb(236 72 153 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-100{--tw-bg-opacity:1;background-color:rgb(254 249 195 / var(--tw-bg-opacity, 1))}.bg-green-50{--tw-bg-opacity:1;background-color:rgb(240 253 244 / var(--tw-bg-opacity, 1))}.p-10{padding:2.5rem}.p-12{padding:3rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.pt-1{padding-top:0.25rem}.pt-4{padding-top:1rem}.pt-6{padding-top:1.5rem}.text-left{text-align:left}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-6xl{font-size:3.75rem;line-height:1}.text-7xl{font-size:4.5rem;line-height:1}.text-8xl{font-size:6rem;line-height:1}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-black{font-weight:900}.font-bold{font-weight:700}.leading-relaxed{line-height:1.625}.leading-tight{line-height:1.25}.tracking-widest{letter-spacing:0.1em}.text-blue-500{--tw-text-opacity:1;color:rgb(59 130 246 / var(--tw-text-opacity, 1))}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-blue-800{--tw-text-opacity:1;color:rgb(30 64 175 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-orange-900{--tw-text-opacity:1;color:rgb(124 45 18 / var(--tw-text-opacity, 1))}.text-pink-200{--tw-text-opacity:1;color:rgb(251 207 232 / var(--tw-text-opacity, 1))}.text-pink-400{--tw-text-opacity:1;color:rgb(244 114 182 / var(--tw-text-opacity, 1))}.text-pink-500{--tw-text-opacity:1;color:rgb(236 72 153 / var(--tw-text-opacity, 1))}.text-pink-600{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-green-700{--tw-text-opacity:1;color:rgb(21 128 61 / var(--tw-text-opacity, 1))}.underline{-webkit-text-decoration-line:underline;text-decoration-line:underline}.opacity-20{opacity:0.2}.opacity-30{opacity:0.3}.opacity-70{opacity:0.7}.opacity-0{opacity:0}.mix-blend-multiply{mix-blend-mode:multiply}.shadow-\[0_-10px_20px_rgba\(0\2c 0\2c 0\2c 0\.05\)\]{--tw-shadow:0 -10px 20px rgba(0,0,0,0.05);--tw-shadow-colored:0 -10px 20px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_4px_0_rgba\(0\2c 0\2c 0\2c 0\.1\)\]{--tw-shadow:0 4px 0 rgba(0,0,0,0.1);--tw-shadow-colored:0 4px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.blur-2xl{--tw-blur:blur(40px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-500{transition-duration:500ms}.duration-300{transition-duration:300ms}.hover\:bg-pink-600:hover{--tw-bg-opacity:1;background-color:rgb(219 39 119 / var(--tw-bg-opacity, 1))}.hover\:text-gray-600:hover{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.focus\:border-blue-400:focus{--tw-border-opacity:1;border-color:rgb(96 165 250 / var(--tw-border-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:p-10{padding:2.5rem}.md\:text-4xl{font-size:2.25rem;line-height:2.5rem}.md\:text-base{font-size:1rem;line-height:1.5rem}}</style></head>
+<body class="flex flex-col items-center py-10 px-4 relative">
+
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ==================== [區塊 1] 教師設定專區 ==================== -->
+    
+
+
+    <!-- ==================== [區塊 2] 學生預覽/實際畫面 ==================== -->
+    <div id="student-mode" class="w-full max-w-2xl mx-auto">
+        
+        <!-- 歡迎畫面 -->
+        <div id="screen-welcome" class="cute-card p-10 text-center relative overflow-hidden">
+            <div class="absolute -top-10 -left-10 text-8xl opacity-20 transform -rotate-12">☁️</div>
+            <div class="absolute -bottom-5 -right-5 text-7xl opacity-30 transform rotate-12">🌙</div>
+            
+            <div class="mb-6 float-anim text-7xl">✨🕰️✨</div>
+            <p class="text-secondary-dark font-bold tracking-widest mb-2 text-sm md:text-base">高一國文《再別康橋》課前活動</p>
+            <h1 class="text-3xl md:text-4xl font-black text-pink-500 mb-6 leading-tight">
+                穿越新月時空！<br>你是哪位民初文青？
+            </h1>
+            <p class="text-lg mb-6 leading-relaxed bg-orange-50 p-4 rounded-2xl text-orange-900 border-2 border-orange-100">
+                時光倒流到百年前的民國初年，<br>
+                在那個充滿文學、愛情與理想的時代，<br>
+                你的靈魂會與哪一位「新月派」文人產生共鳴呢？<br>
+                快來測測看吧！
+            </p>
+            <div class="mb-8 w-full max-w-md mx-auto text-left space-y-4 relative z-10">
+                <div class="flex gap-4">
+                    <div class="w-1/2">
+                        <label class="block text-sm font-bold text-pink-500 mb-1">班級</label>
+                        <input type="text" id="input-class" placeholder="例：401" class="w-full px-4 py-3 rounded-2xl border-2 border-pink-100 focus:outline-none focus:border-pink-400">
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block text-sm font-bold text-pink-500 mb-1">座號</label>
+                        <input type="text" id="input-seat" placeholder="例：05" class="w-full px-4 py-3 rounded-2xl border-2 border-pink-100 focus:outline-none focus:border-pink-400">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-pink-500 mb-1">姓名</label>
+                    <input type="text" id="input-name" placeholder="請輸入真實姓名" class="w-full px-4 py-3 rounded-2xl border-2 border-pink-100 focus:outline-none focus:border-pink-400">
+                </div>
+                <p id="student-info-error" class="hidden-cute text-red-600 text-sm font-bold text-center bg-red-50 py-2 rounded-xl">請填寫班級、座號與姓名後才能開始測驗！</p>
+            </div>
+            <button onclick="startQuiz()" class="cute-btn text-xl text-center">
+                開始穿越之旅 🚀
+            </button>
+        </div>
+
+        <!-- 測驗畫面 -->
+        <div id="screen-quiz" class="cute-card p-8 md:p-10 hidden-cute">
+            <div class="mb-8 relative">
+                <div class="flex justify-between text-sm font-bold text-pink-400 mb-2">
+                    <span>時光讀取中...</span>
+                    <span id="quiz-progress-text">5 / 5</span>
+                </div>
+                <div class="w-full bg-pink-50 rounded-full h-4 border-2 border-pink-100 relative">
+                    <div id="quiz-progress-bar" class="bg-pink-400 h-full rounded-full transition-all duration-500 w-[20%]" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <div class="min-h-[300px]">
+                <h2 id="question-text" class="text-2xl font-bold text-blue-600 mb-6 leading-relaxed flex items-start gap-3">
+                    <span class="text-3xl">💭</span>
+                    <span id="question-content" class="pt-1">如果要跟你最喜歡、充滿回憶的地方告別，你會用什麼方式？</span>
+                </h2>
+                <div id="options-container" class="space-y-4"><button class="option-btn"><span class="font-bold text-pink-500 mr-2">A.</span> 理智地揮手道別，告訴自己下一個旅程會更好。</button><button class="option-btn"><span class="font-bold text-pink-500 mr-2">B.</span> 寫下一首深情的詩，把情感化作天邊的一抹雲彩。</button><button class="option-btn"><span class="font-bold text-pink-500 mr-2">C.</span> 拍下許多照片或畫一幅畫，把最美的結構與光影定格。</button><button class="option-btn"><span class="font-bold text-pink-500 mr-2">D.</span> 將這份不捨化作濃烈的刻骨銘心，永遠在心中燃燒。</button></div>
+            </div>
+        </div>
+
+        <!-- 結果畫面 -->
+        <div id="screen-result" class="hidden-cute">
+            <div id="result-capture-card" class="cute-card p-8 md:p-10 text-center mb-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-100 rounded-full mix-blend-multiply filter blur-2xl opacity-70 -translate-y-1/2 translate-x-1/2"></div>
+                <div class="absolute bottom-0 left-0 w-32 h-32 bg-blue-100 rounded-full mix-blend-multiply filter blur-2xl opacity-70 translate-y-1/2 -translate-x-1/2"></div>
+                
+                <p class="text-sm font-bold text-gray-400 tracking-widest mb-2">你的前世靈魂是...</p>
+                <div class="text-6xl mb-4 float-anim" id="result-emoji">🏛️</div>
+                <h1 id="result-title" class="text-3xl md:text-4xl font-black text-pink-500 mb-2 font-serif-tc">林徽音</h1>
+                <p id="result-subtitle" class="text-xl font-bold text-blue-500 mb-6">知性優雅的建築才女</p>
+                
+                <div class="bg-gray-50 rounded-2xl p-6 text-left border-2 border-gray-100 relative z-10">
+                    <p id="result-desc" class="text-lg leading-relaxed text-gray-700">你就像才華洋溢的林徽音！你同時兼具了感性的詩意與理性的邏輯。面對事物，你有一套獨特的審美觀，在朋友圈中總是散發著知性與優雅的光芒。</p>
+                </div>
+                <p id="upload-status" class="text-sm font-bold mt-6 min-h-[1.25rem] text-gray-500"></p>
+            </div>
+        </div>
+
+        <!-- 成功畫面 -->
+        <div id="screen-success" class="hidden-cute cute-card p-12 text-center">
+            <div class="text-8xl mb-6 float-anim">🎉</div>
+            <h2 class="text-3xl font-black text-pink-500 mb-4">傳送成功！</h2>
+            <p class="text-xl text-gray-600 leading-relaxed mb-6">
+                你的文青靈魂已經被系統記錄下來啦！<br>
+                請準備好課本，我們準備進入《再別康橋》的浪漫世界！
+            </p>
+            <p id="upload-status-success" class="text-sm font-bold text-gray-500 min-h-[1.25rem]"></p>
+            <!-- 預覽模式用的重置按鈕，僅在教端預覽時顯示，最終程式碼裡這顆會被隱藏處理 -->
+            
+        </div>
+
+    </div>
+
+    <!-- ==================== [區塊 3] 教師預覽浮動控制列 ==================== -->
+    
+
+    <!-- ==================== [區塊 4] 最終匯出與教學專區 ==================== -->
+    
+
+
+    <!-- ==================== 邏輯腳本 ==================== -->
+    <script src="shared/config.js"></script>
+    <script src="shared/activity-submit.js"></script>
+    <script>
+        const ACTIVITY_ID = 'B1L2';
+        const ACTIVITY_NAME = '穿越新月時空';
+
+        // 測驗題庫
+        const quizData = [
+            {
+                question: "面對不公不義的事情，你的第一反應是什麼？",
+                options: [
+                    { text: "挺身而出，大聲疾呼，甚至不惜走上街頭抗議！", type: "wenyiduo" },
+                    { text: "提筆寫下深刻的分析，用理智與溫和的方式推動改革。", type: "hushi" },
+                    { text: "在體制內盡力斡旋，保護身邊的人，提供堅實的後盾。", type: "caiyuanpei" },
+                    { text: "將悲憤化為詩歌與藝術，用美感來治癒世界的創傷。", type: "bianzhilin" }
+                ]
+            },
+            {
+                question: "週末的午後，你最喜歡的放鬆方式是？",
+                options: [
+                    { text: "參加熱鬧的聚會，和朋友們盡情唱歌跳舞！", type: "luxiaoman" },
+                    { text: "找個安靜的咖啡廳，看一本哲學或文學書。", type: "bianzhilin" },
+                    { text: "背起背包去旅行，記錄下美麗的建築與風景。", type: "linhuiyin" },
+                    { text: "和志同道合的朋友激辯時事，探討國家社會的未來。", type: "wenyiduo" }
+                ]
+            },
+            {
+                question: "面對家裡安排的傳統要求（例如升學、婚姻等），你會怎麼做？",
+                options: [
+                    { text: "勇敢反抗，甚至不惜決裂，我要追求完全的自由！", type: "xuzhimo" },
+                    { text: "雖然無奈，但會理智地面對，尋找不傷害雙方的解決方式。", type: "hushi" },
+                    { text: "表面順從，但內心保持獨立，專注於自己的專業和理想。", type: "linhuiyin" },
+                    { text: "包容並尊重長輩的想法，嘗試用溫和溝通慢慢改變他們。", type: "caiyuanpei" }
+                ]
+            },
+            {
+                question: "你的朋友遇到了困難，情緒低落，你會怎麼安慰他？",
+                options: [
+                    { text: "帶他去吃頓好吃的，或者去兜風，讓他忘記煩惱！", type: "luxiaoman" },
+                    { text: "給予溫暖的擁抱，並為他寫一段充滿詩意的文字打氣。", type: "xuzhimo" },
+                    { text: "靜靜地陪伴他，用旁觀者的視角與哲理點醒他。", type: "bianzhilin" },
+                    { text: "像長輩一樣給予最實質的資源與庇護，讓他安心。", type: "caiyuanpei" }
+                ]
+            },
+            {
+                question: "如果要跟你最喜歡、充滿回憶的地方告別，你會用什麼方式？",
+                options: [
+                    { text: "理智地揮手道別，告訴自己下一個旅程會更好。", type: "hushi" },
+                    { text: "寫下一首深情的詩，把情感化作天邊的一抹雲彩。", type: "xuzhimo" },
+                    { text: "拍下許多照片或畫一幅畫，把最美的結構與光影定格。", type: "linhuiyin" },
+                    { text: "將這份不捨化作濃烈的刻骨銘心，永遠在心中燃燒。", type: "wenyiduo" }
+                ]
+            }
+        ];
+
+        // 測驗結果對應
+        const resultTypes = {
+            "xuzhimo": { name: "徐志摩", subtitle: "浪漫多情的感性才子", emoji: "✍️", desc: "你就像寫下〈再別康橋〉的徐志摩！你擁有豐富的情感和浪漫的細胞，一生都在追求「愛、自由與美」。你對周遭的事物總是充滿熱情，心思細膩，是個標準的文藝青年！" },
+            "linhuiyin": { name: "林徽音", subtitle: "知性優雅的建築才女", emoji: "🏛️", desc: "你就像才華洋溢的林徽音！你同時兼具了感性的詩意與理性的邏輯。面對事物，你有一套獨特的審美觀，在朋友圈中總是散發著知性與優雅的光芒。" },
+            "luxiaoman": { name: "陸小曼", subtitle: "敢愛敢恨的社交名媛", emoji: "💃", desc: "你就像充滿活力的陸小曼！你喜歡熱鬧，敢愛敢恨，絕對是聚會上的閃亮之星。你對生活充滿了熱情與好奇，不喜歡被傳統的框架束縛。" },
+            "hushi": { name: "胡適", subtitle: "理性溫和的改革先鋒", emoji: "👓", desc: "你就像提倡白話文運動的胡適之！你理智、冷靜，喜歡思考和解決問題。面對困難，你不會輕易被情緒左右，而是會尋找最合理的方法。" },
+            "wenyiduo": { name: "聞一多", subtitle: "熱血愛國的紅燭詩人", emoji: "🕯️", desc: "你就像寫下〈死水〉的聞一多！你有一顆熾熱的愛國心與強烈的正義感，對不公不義的事情絕不妥協。是個敢於發聲、情感濃烈的熱血青年！" },
+            "bianzhilin": { name: "卞之琳", subtitle: "冷靜深情的哲理詩人", emoji: "🌉", desc: "「你站在橋上看風景...」你就像新月派的卞之琳！你性格較為內斂、冷靜，喜歡在旁觀者的角度觀察世界，內心卻充滿了細膩與深情。" },
+            "caiyuanpei": { name: "蔡元培", subtitle: "包容博大的教育先驅", emoji: "🎓", desc: "你就像提倡「思想自由，兼容並包」的北大校長蔡元培！你有著長者般的溫暖與包容心，能夠接納不同的聲音與想法，是團體中最信賴的靠山！" }
+        };
+
+        let currentQuestionIndex = 0;
+        let userScores = { xuzhimo: 0, linhuiyin: 0, luxiaoman: 0, hushi: 0, wenyiduo: 0, bianzhilin: 0, caiyuanpei: 0 };
+        let finalResultName = "";
+        let activitySubmitStarted = false;
+
+        function setUploadStatus(msg, kind) {
+            const targets = ['upload-status', 'upload-status-success'];
+            targets.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.textContent = msg;
+                el.className = 'text-sm font-bold min-h-[1.25rem] ' + (
+                    kind === 'success' ? 'text-green-600' :
+                    kind === 'error' ? 'text-red-600' :
+                    kind === 'warn' ? 'text-orange-600' :
+                    kind === 'loading' ? 'text-blue-600' : 'text-gray-500'
+                );
+            });
+        }
+
+        async function submitActivityResult(extra) {
+            if (activitySubmitStarted) return;
+            activitySubmitStarted = true;
+            const extraText = extra || '';
+            try {
+                await ActivitySubmit.submit({
+                    activityId: ACTIVITY_ID,
+                    activityName: ACTIVITY_NAME,
+                    result: finalResultName,
+                    extra: extraText,
+                    captureEl: document.getElementById('result-capture-card'),
+                    onStatus: (msg, kind) => setUploadStatus(msg, kind)
+                });
+                document.getElementById('screen-result').classList.add('hidden-cute');
+                document.getElementById('screen-success').classList.remove('hidden-cute');
+            } catch (err) {
+                console.error(err);
+                activitySubmitStarted = false;
+            }
+        }
+
+        // UI 提示工具
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            let bgClass = 'bg-white border-2 border-gray-200 text-gray-700';
+            let icon = '💡';
+            if (type === 'error') { bgClass = 'bg-red-50 border-2 border-red-200 text-red-700'; icon = '❌'; }
+            if (type === 'success') { bgClass = 'bg-green-50 border-2 border-green-200 text-green-700'; icon = '✅'; }
+            
+            toast.className = `${bgClass} px-6 py-4 rounded-2xl shadow-[0_4px_0_rgba(0,0,0,0.1)] flex items-center gap-3 font-bold transform transition-all duration-300 translate-x-full opacity-0`;
+            toast.innerHTML = `<span class="text-xl">${icon}</span> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        /* --- [流程 1] 教師預覽（元素不存在時略過） --- */
+        function copyGasCode() {
+            const block = document.getElementById('gas-code-block');
+            if (!block) return;
+            block.select();
+            document.execCommand('copy');
+            showToast('腳本複製成功！', 'success');
+        }
+
+        function goToPreview() {
+            const inputUrlEl = document.getElementById('teacher-gas-url-input');
+            const teacherSetup = document.getElementById('teacher-setup');
+            if (!inputUrlEl || !teacherSetup) return;
+            const inputUrl = inputUrlEl.value.trim();
+            if (!inputUrl || !inputUrl.startsWith('https://script.google.com/')) {
+                showToast('請先貼上正確的 Google Apps Script 網址喔！', 'error');
+                return;
+            }
+            if (window.ACTIVITY_CONFIG) window.ACTIVITY_CONFIG.GAS_URL = inputUrl;
+            teacherSetup.classList.add('hidden-cute');
+            const studentMode = document.getElementById('student-mode');
+            if (studentMode) studentMode.classList.remove('hidden-cute');
+            const previewBar = document.getElementById('teacher-preview-bar');
+            if (previewBar) previewBar.classList.remove('hidden-cute');
+            showToast('已進入學生視角預覽！', 'success');
+        }
+
+        /* --- [流程 2] 測驗邏輯 --- */
+        function startQuiz() {
+            const className = document.getElementById('input-class').value.trim();
+            const seat = document.getElementById('input-seat').value.trim();
+            const name = document.getElementById('input-name').value.trim();
+            const errEl = document.getElementById('student-info-error');
+            if (!className || !seat || !name) {
+                if (errEl) errEl.classList.remove('hidden-cute');
+                return;
+            }
+            if (errEl) errEl.classList.add('hidden-cute');
+            ActivitySubmit.saveStudent({ className, seat, name });
+
+            document.getElementById('screen-welcome').classList.add('hidden-cute');
+            document.getElementById('screen-quiz').classList.remove('hidden-cute');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const qData = quizData[currentQuestionIndex];
+            const progressPercent = ((currentQuestionIndex + 1) / quizData.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
+            document.getElementById('quiz-progress-text').innerText = `${currentQuestionIndex + 1} / ${quizData.length}`;
+            document.getElementById('question-content').innerText = qData.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            qData.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn";
+                const labels = ['A', 'B', 'C', 'D'];
+                btn.innerHTML = `<span class="font-bold text-pink-500 mr-2">${labels[index]}.</span> ${opt.text}`;
+                btn.onclick = () => selectOption(opt.type);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(type) {
+            userScores[type]++;
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            let maxScore = -1;
+            let topType = "xuzhimo"; 
+            for (const [type, score] of Object.entries(userScores)) {
+                if (score > maxScore) { maxScore = score; topType = type; }
+            }
+            
+            const result = resultTypes[topType];
+            finalResultName = result.name;
+
+            document.getElementById('result-emoji').innerText = result.emoji;
+            document.getElementById('result-title').innerText = result.name;
+            document.getElementById('result-subtitle').innerText = result.subtitle;
+            document.getElementById('result-desc').innerText = result.desc;
+
+            document.getElementById('screen-quiz').classList.add('hidden-cute');
+            document.getElementById('screen-result').classList.remove('hidden-cute');
+            activitySubmitStarted = false;
+            setUploadStatus('', '');
+            requestAnimationFrame(() => {
+                setTimeout(() => submitActivityResult(''), 400);
+            });
+        }
+
+        function resetPreview() {
+            currentQuestionIndex = 0;
+            userScores = { xuzhimo: 0, linhuiyin: 0, luxiaoman: 0, hushi: 0, wenyiduo: 0, bianzhilin: 0, caiyuanpei: 0 };
+            activitySubmitStarted = false;
+            
+            document.getElementById('screen-success').classList.add('hidden-cute');
+            document.getElementById('screen-result').classList.add('hidden-cute');
+            document.getElementById('screen-welcome').classList.remove('hidden-cute');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goToExport() {
+            const teacherExport = document.getElementById('teacher-export');
+            if (!teacherExport) return;
+            // 複製一份當前的 DOM 來清理，避免改壞目前的畫面
+            const clone = document.documentElement.cloneNode(true);
+            
+            const teacherSetup = clone.querySelector('#teacher-setup');
+            const previewBar = clone.querySelector('#teacher-preview-bar');
+            const teacherExportEl = clone.querySelector('#teacher-export');
+            if (teacherSetup) teacherSetup.remove();
+            if (previewBar) previewBar.remove();
+            if (teacherExportEl) teacherExportEl.remove();
+            
+            // 移除預覽用的重置按鈕
+            const resetBtn = clone.querySelector('#preview-reset-btn');
+            if(resetBtn) resetBtn.remove();
+            
+            // 2. 將學生畫面重置為初始狀態
+            const clonedStudentMode = clone.querySelector('#student-mode');
+            if (clonedStudentMode) clonedStudentMode.classList.remove('hidden-cute');
+            
+            const w = clone.querySelector('#screen-welcome');
+            if (w) w.classList.remove('hidden-cute');
+            const q = clone.querySelector('#screen-quiz');
+            if (q) q.classList.add('hidden-cute');
+            const r = clone.querySelector('#screen-result');
+            if (r) r.classList.add('hidden-cute');
+            const s = clone.querySelector('#screen-success');
+            if (s) s.classList.add('hidden-cute');
+            
+            let rawHTML = clone.outerHTML;
+            const gasUrl = (window.ACTIVITY_CONFIG && window.ACTIVITY_CONFIG.GAS_URL) || '';
+            rawHTML = rawHTML.replace(/GAS_URL:\s*""/, `GAS_URL: "${gasUrl}"`);
+            
+            const finalCode = "<!DOCTYPE html>\n" + rawHTML;
+            
+            const finalHtmlCode = document.getElementById('final-html-code');
+            if (!finalHtmlCode) return;
+            finalHtmlCode.value = finalCode;
+
+            const liveStudentMode = document.getElementById('student-mode');
+            if (liveStudentMode) liveStudentMode.classList.add('hidden-cute');
+            const livePreviewBar = document.getElementById('teacher-preview-bar');
+            if (livePreviewBar) livePreviewBar.classList.add('hidden-cute');
+            document.body.style.paddingBottom = "0";
+            teacherExport.classList.remove('hidden-cute');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showToast('已生成發布程式碼！', 'success');
+        }
+
+        function copyFinalCode() {
+            const el = document.getElementById('final-html-code');
+            if (!el) return;
+            el.select();
+            document.execCommand('copy');
+            showToast('程式碼複製成功！準備貼到協作平台吧！', 'success');
+        }
+    </script>
+
+</body></html>

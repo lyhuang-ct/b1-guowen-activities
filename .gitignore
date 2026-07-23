@@ -1,0 +1,11 @@
+# 本機／編輯器
+.DS_Store
+Thumbs.db
+*.tmp
+.vscode/
+.idea/
+
+# 不必公開到網頁的 Apps Script 原始碼（後端在 Google，不上 Pages）
+# 若你希望連設定說明也放到倉庫，可刪除下一行
+# shared/Code.gs
+# shared/setup-hint.txt

@@ -1,0 +1,29 @@
+【B1 活動統一後端設定步驟】
+
+1. 新建一個 Google 試算表（例如命名：高一國文B1活動紀錄）
+   - 可先手動建立分頁：B1L1、B1L2、B1L3、B1L4、B1L5、B1L7、B1L8、B1L9、B1L10
+   - 若未建立，系統會在第一次寫入時自動建立
+
+2. 在 Google 雲端硬碟新建資料夾「B1活動截圖」
+   - 開啟資料夾，從網址複製資料夾 ID
+   - 網址格式：https://drive.google.com/drive/folders/【FOLDER_ID】
+
+3. 開啟試算表 → 擴充功能 → Apps Script
+   - 刪除預設程式碼，貼上 shared/Code.gs 全部內容
+   - 填寫 SPREADSHEET_ID（試算表網址 /d/ 與 /edit 之間）
+   - 填寫 DRIVE_FOLDER_ID（步驟 2 的資料夾 ID）
+   - 儲存
+
+4. 部署 → 新增部署作業 → 類型選「網頁應用程式」
+   - 執行身分：我
+   - 具有存取權的使用者：任何人
+   - 授權後複製「網頁應用程式」URL（結尾為 /exec）
+
+5. 把該 URL 貼到 shared/config.js 的 GAS_URL 字串中
+   例：GAS_URL: "https://script.google.com/macros/s/xxxxx/exec"
+
+6. 以整個資料夾方式架站或本機開啟 B1lesson_tree.html 測試
+   （需能讀取 shared/config.js 與 shared/activity-submit.js）
+
+截圖檔名格式：班級_座號_活動名稱_姓名_yyyymmdd.png
+試算表欄位：作答時間、班級、座號、姓名、活動名稱、結果、補充資訊、截圖檔名、截圖連結
