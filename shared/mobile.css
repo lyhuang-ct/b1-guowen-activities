@@ -21,13 +21,24 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
-/* 避免 iOS 聚焦輸入框時自動放大；觸控高度至少約 44px */
+/* 避免 iOS 聚焦輸入框時自動放大；注音字型在手機上也需更大才看得清聲調 */
 input,
 textarea,
 select,
 button {
-  font-size: 16px !important;
+  font-size: 18px !important;
   touch-action: manipulation;
+}
+
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select,
+  button,
+  .option-btn {
+    font-size: 1.12rem !important;
+    line-height: 2.05 !important;
+  }
 }
 
 input:not([type="checkbox"]):not([type="radio"]),

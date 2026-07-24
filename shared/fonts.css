@@ -49,10 +49,46 @@ div,
   font-family: var(--app-font) !important;
 }
 
-/* 注音字型字形較高，拉開行高避免上下相撞 */
+/* 注音字型字形較高，拉開行高避免上下相撞；手機再放大方便看清聲調 */
+html {
+  font-size: 17px;
+}
+
 body {
-  line-height: 1.9;
-  letter-spacing: 0.01em;
+  font-size: 1.05rem;
+  line-height: 2;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 19px;
+  }
+
+  body {
+    font-size: 1.08rem;
+    line-height: 2.1;
+    letter-spacing: 0.025em;
+  }
+
+  h1 {
+    font-size: 1.55rem !important;
+    line-height: 1.55 !important;
+  }
+
+  h2 {
+    font-size: 1.28rem !important;
+    line-height: 1.65 !important;
+  }
+
+  .option-btn,
+  button,
+  label,
+  p,
+  li {
+    font-size: 1.08rem !important;
+    line-height: 2.05 !important;
+  }
 }
 
 h1, h2, h3,
