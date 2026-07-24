@@ -3,7 +3,7 @@
  * 高一國文 B1 活動統一後端（Google Apps Script）
  * ============================================================
  * 設定步驟：
- * 1. 新建一個 Google 試算表，建立工作表分頁：B1L1、B1L2、B1L3、B1L4、B1L5、B1L7、B1L8、B1L9、B1L10
+ * 1. 新建一個 Google 試算表，建立工作表分頁：B1L1～B1L5、B1L7～B1L11
  *    （沒有的分頁會在第一次寫入時自動建立）
  * 2. 在 Google 雲端硬碟新建資料夾「B1活動截圖」，複製資料夾 ID
  *    （網址 https://drive.google.com/drive/folders/【這裡就是FOLDER_ID】）

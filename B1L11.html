@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    <meta name="theme-color" content="#fdf2f8">
+    <link rel="stylesheet" href="shared/mobile.css">
+    <title>黃蝴蝶的生命軌跡｜煤炭堆上的黃蝴蝶</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Noto Sans TC"', 'sans-serif'] },
+                    colors: {
+                        bloom: {
+                            soft: '#fff1f7',
+                            petal: '#fce7f3',
+                            rose: '#fb7185',
+                            deep: '#e11d48',
+                            ink: '#4c0519'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Noto Sans TC", sans-serif;
+            background:
+                radial-gradient(circle at 12% 18%, rgba(251, 113, 133, 0.22), transparent 42%),
+                radial-gradient(circle at 88% 8%, rgba(244, 114, 182, 0.18), transparent 38%),
+                linear-gradient(180deg, #fff7fb 0%, #fdf2f8 55%, #ffe4e6 100%);
+        }
+        .fade-in { animation: fadeIn 0.7s ease forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hidden-section { display: none; }
+        .loader {
+            border: 4px solid #fce7f3;
+            border-top: 4px solid #fb7185;
+            border-radius: 50%;
+            width: 42px; height: 42px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .option-btn {
+            transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+        }
+        .option-btn:active { transform: scale(0.98); }
+    </style>
+</head>
+<body class="min-h-[100dvh] flex items-start sm:items-center justify-center text-bloom-ink p-3 sm:p-6">
+
+    <div id="app-container" class="max-w-2xl w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden border border-pink-100 relative fade-in">
+        <div class="h-3 bg-gradient-to-r from-pink-300 via-rose-400 to-fuchsia-300"></div>
+
+        <div class="p-5 sm:p-10">
+            <!-- 歡迎 -->
+            <div id="intro-section" class="text-center">
+                <p class="text-sm font-bold tracking-widest text-rose-400 mb-2">詹宏志〈煤炭堆上的黃蝴蝶〉</p>
+                <h1 class="text-2xl sm:text-3xl font-black text-rose-600 mb-3 leading-snug">
+                    🦋 黃蝴蝶的生命軌跡
+                </h1>
+                <p class="text-sm sm:text-base text-rose-900/70 mb-7 leading-relaxed">
+                    測出你的潛在人格與未來引擎<br>
+                    請憑直覺，完成 5 題情境選擇
+                </p>
+
+                <div class="mb-7 w-full max-w-md mx-auto text-left space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-rose-500 mb-1 text-center">班級 (例: 404)</label>
+                        <input type="text" id="input-class" placeholder="例: 404"
+                               class="w-full px-4 py-3.5 border-2 border-pink-200 rounded-2xl focus:outline-none focus:border-rose-400 text-center text-base bg-bloom-soft">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-rose-500 mb-1 text-center">座號 (例: 05)</label>
+                        <input type="text" id="input-seat" placeholder="例: 05"
+                               class="w-full px-4 py-3.5 border-2 border-pink-200 rounded-2xl focus:outline-none focus:border-rose-400 text-center text-base bg-bloom-soft">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-rose-500 mb-1 text-center">姓名</label>
+                        <input type="text" id="input-name" placeholder="請輸入姓名"
+                               class="w-full px-4 py-3.5 border-2 border-pink-200 rounded-2xl focus:outline-none focus:border-rose-400 text-center text-base bg-bloom-soft">
+                    </div>
+                    <p id="name-error" class="hidden-section text-rose-600 text-sm font-bold text-center bg-rose-50 py-2 rounded-xl">請確實填寫班級、座號與姓名後再開始</p>
+                </div>
+
+                <button type="button" onclick="startQuiz()" class="w-full mobile-cta-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 rounded-full shadow-lg text-lg transition active:scale-95">
+                    展開翅膀，開始測驗
+                </button>
+            </div>
+
+            <!-- 測驗 -->
+            <div id="quiz-section" class="hidden-section">
+                <div class="mb-5 flex justify-between items-center text-sm font-bold text-rose-400">
+                    <span id="question-counter">進度：1 / 5</span>
+                    <div class="w-2/3 bg-pink-100 rounded-full h-2.5 overflow-hidden">
+                        <div id="progress-bar" class="bg-rose-400 h-2.5 rounded-full transition-all duration-300" style="width: 20%"></div>
+                    </div>
+                </div>
+                <h2 id="question-text" class="text-lg sm:text-xl font-bold text-rose-900 mb-5 leading-relaxed text-left"></h2>
+                <div id="options-container" class="flex flex-col gap-3"></div>
+            </div>
+
+            <!-- 載入 -->
+            <div id="loading-section" class="hidden-section text-center py-14">
+                <div class="loader mb-5"></div>
+                <p class="font-bold text-rose-500">黃蝴蝶正在盤旋分析中…</p>
+            </div>
+
+            <!-- 結果 -->
+            <div id="result-section" class="hidden-section text-center">
+                <p class="text-sm font-bold tracking-widest text-rose-400 mb-2">測驗結果</p>
+                <div class="text-5xl mb-3" id="result-emoji">🦋</div>
+                <h2 id="result-title" class="text-2xl sm:text-3xl font-black text-rose-600 mb-2"></h2>
+                <p id="result-tagline" class="text-base font-bold text-fuchsia-500 mb-5"></p>
+                <div id="result-desc" class="text-sm sm:text-base text-left leading-relaxed bg-bloom-soft border border-pink-100 rounded-2xl p-5 mb-4 text-rose-950/80 space-y-3"></div>
+                <p id="upload-status" data-capture-ignore class="text-xs font-bold text-rose-400 min-h-[1.25rem] mb-4"></p>
+                <button type="button" onclick="showConclusion()" class="w-full mobile-cta-full bg-fuchsia-500 hover:bg-fuchsia-600 text-white font-bold py-3.5 rounded-full shadow-md transition active:scale-95">
+                    走進〈煤炭堆上的黃蝴蝶〉
+                </button>
+            </div>
+
+            <!-- 課文導入（無教師叮嚀） -->
+            <div id="conclusion-section" class="hidden-section text-center">
+                <h2 class="text-2xl font-black text-rose-600 mb-4">煤與蝶的生命風景</h2>
+                <div class="text-sm sm:text-base text-left leading-relaxed text-rose-950/80 space-y-3 mb-6">
+                    <p>詹宏志以童年記憶裡的「煤炭」與「黃蝴蝶」，寫出沉重底色與明亮意象並存的生命感覺。</p>
+                    <p class="bg-pink-50 border-l-4 border-rose-300 p-4 rounded-r-xl italic">在黑亮的煤堆上，仍可能有一雙明黃色翅膀輕輕飛過——那是現實與想像、承擔與詩意交會的瞬間。</p>
+                    <p>你的測驗結果，正是走進這篇文章時，可以對照自己人格與「人生引擎」的一把鑰匙。</p>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-fuchsia-500 py-1">
+                    〈煤炭堆上的黃蝴蝶〉
+                </h3>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared/config.js"></script>
+    <script src="shared/activity-submit.js"></script>
+    <script>
+        const ACTIVITY_ID = 'B1L11';
+        const ACTIVITY_NAME = '黃蝴蝶的生命軌跡';
+
+        const questions = [
+            {
+                question: 'Q1. 當你回憶起童年，腦海中第一個浮現的「底色」或「畫面」最接近什麼？',
+                options: [
+                    { key: 'A', text: '一堆黑亮、散發著沉穩微溫的無煙煤' },
+                    { key: 'B', text: '陽光折射下，在黑色瓦礫堆上翩翩起舞的明黃色翅膀' },
+                    { key: 'C', text: '暖洋洋的天井矮牆，一隻慵懶睡覺、不理會外界的貓' },
+                    { key: 'D', text: '黃昏天色變幻中，一輛發出「噗卜噗卜」聲、滿載而來的卡車' },
+                    { key: 'E', text: '忽藍忽紫的夜光變景，與充滿繽紛亮片的野地舞台' },
+                    { key: 'F', text: '靜謐深夜裡，微曦天光透入窗櫺，伴隨翻動巨著的沙沙聲' },
+                    { key: 'G', text: '暴雨初晴後，在溼濡野草中悄悄綻放、生氣昂揚的小梅花' }
+                ]
+            },
+            {
+                question: 'Q2. 每當面臨人生重要的「生命場景轉換」（如升學、搬家、轉換跑道），你通常會抱持著什麼樣的態度？',
+                options: [
+                    { key: 'A', text: '默默做好本分與萬全準備，不聲不響地承擔所有重擔' },
+                    { key: 'B', text: '把它視為一場浪漫的冒險，用美麗的想像去豐富新生活' },
+                    { key: 'C', text: '隨遇而安，即使獨來獨往，也能在任何新環境找到最舒適的角落' },
+                    { key: 'D', text: '興奮地期待未知，渴望透過每一次移動去見識更寬廣的世界' },
+                    { key: 'E', text: '全心投入，無論如何都要在這個新舞台上盡情宣洩、大展身手' },
+                    { key: 'F', text: '提早收集資訊並大量閱讀，透過理性規劃與推理，讓自己能隨機應變' },
+                    { key: 'G', text: '即使過程疲憊或面臨打擊，也相信自己能撐到最後、解鎖人生' }
+                ]
+            },
+            {
+                question: 'Q3. 在人際關係或家庭中，你最習慣扮演什麼樣的「角色」？',
+                options: [
+                    { key: 'A', text: '寡言但極具分量，用默默的體貼與實際行動來表達關懷' },
+                    { key: 'B', text: '情感細膩，常能發現生活中的微小驚喜與詩意，並樂於與人分享感動' },
+                    { key: 'C', text: '保持舒適的距離感，習慣獨立，但若有人願意靠近，也樂意安靜傾聽' },
+                    { key: 'D', text: '慷慨熱情，喜歡與身邊的人共享成果，凝聚歡樂的嘉年華氣氛' },
+                    { key: 'E', text: '同理心極強，容易被他人的故事打動，也擅長用言語或情感渲染他人' },
+                    { key: 'F', text: '分析者與問題解決者，習慣用理性思維幫大家理清頭緒' },
+                    { key: 'G', text: '溫柔的避風港，在他人面臨挫折時給予最堅實、溫厚的陪伴與支持' }
+                ]
+            },
+            {
+                question: 'Q4. 當你感到極度疲憊或壓力巨大時，你最渴望用什麼方式來「重新發動人生的引擎」？',
+                options: [
+                    { key: 'A', text: '徹底切斷外界干擾，沉沉大睡一場以恢復精力' },
+                    { key: 'B', text: '讓思緒飛走，沉浸在音樂、藝術或浪漫的白日夢中進行逃逸' },
+                    { key: 'C', text: '找一個沒人打擾的隱密角落，享受全然的孤獨與安靜' },
+                    { key: 'D', text: '出發去旅行！藉由在世界各個角落的晃蕩與探索來轉換心境' },
+                    { key: 'E', text: '看一場高潮迭起、情感豐饒的戲劇，藉由大哭或大笑宣洩情緒' },
+                    { key: 'F', text: '找一本精彩的偵探小說或巨著熬夜讀完，在知識中重拾前進的勇氣' },
+                    { key: 'G', text: '檢討挫敗、重整旗鼓，心存感激地向過去道別，然後重新站起來' }
+                ]
+            },
+            {
+                question: 'Q5. 你認為自己最不可被忽視的「核心能力」是什麼？',
+                options: [
+                    { key: 'A', text: '條理清晰、默默耕耘、在專業領域上精益求精的專注力' },
+                    { key: 'B', text: '擁有豐富的想像力，能將平凡、晦暗的事物賦予美麗意象的創造力' },
+                    { key: 'C', text: '敏銳的觀察力，能在繁雜世界中保持清醒與自在的獨立性' },
+                    { key: 'D', text: '慷慨分享、能迅速凝聚人心並帶來幸福感的號召力' },
+                    { key: 'E', text: '口語表達與情感渲染力極佳，能用聲音或表演深深打動人心的感染力' },
+                    { key: 'F', text: '善於提綱挈領、掌握重點，且擁有發現問題並尋求解答的邏輯思考力' },
+                    { key: 'G', text: '歷經風霜與雨露折磨，仍能保持生機、越挫越勇的驚人韌性' }
+                ]
+            }
+        ];
+
+        const results = {
+            A: {
+                emoji: '⬛',
+                title: '煤｜無煙煤型',
+                tagline: '默默守護的「實幹派」',
+                trait: '就像詹宏志筆下最高級、黑亮且沉穩的無煙煤，你寡言、穩重且極具分量。你不擅長用花言巧語表達愛，但你的專業能力與責任感就是你最堅實的底牌。',
+                engine: '人生引擎：「實際的關懷」。當身邊的人面臨困境，你總是像那輛準時出現的運煤卡車一樣，用實際的行動提供源源不絕的溫暖與照顧。'
+            },
+            B: {
+                emoji: '🦋',
+                title: '蝶｜黃蝴蝶型',
+                tagline: '尋找黑森林的「浪漫主義者」',
+                trait: '就像在沉重、黑色的煤炭山上翩翩起舞的明黃色蝴蝶。在別人眼中或許單調或沉重的生活中，你總能用意象、浪漫與豐富的想像力，編織出屬於自己的美麗解答。',
+                engine: '人生引擎：「詩意的追尋」。你擁有極高的敏感度，能將生活中的不完美提煉成藝術，用文字或夢想給自己一雙像老鷹一樣飛翔的翅膀。'
+            },
+            C: {
+                emoji: '🐱',
+                title: '貓｜天井中的貓型',
+                tagline: '怡然自得的「獨立觀察家」',
+                trait: '就像那隻喜歡在紅磚矮牆上曬太陽，或是踡跼在煤炭堆高處俯瞰世界的貓。你熱愛自由、享受孤獨，在喧囂、浮躁的世界中，擁有一套不與人爭、怡然自得的生存哲學。',
+                engine: '人生引擎：「自在的獨立」。你不需要外界的掌聲來證明自己，在安靜觀察與自給自足的空間裡，你就能源源不絕地產生前進的平靜力量。'
+            },
+            D: {
+                emoji: '🚚',
+                title: '運｜卡車司機型',
+                tagline: '帶來幸福的「溫厚分享者」',
+                trait: '就像那輛伴隨「噗卜噗卜」引擎聲準時抵達，為整條街帶來歡樂與共享資源的送煤卡車。你個性慷慨、豪爽，具有極強的親和力，最討厭自私自利，樂於與大眾分享成果。',
+                engine: '人生引擎：「分享的喜悅」。你溫厚的人情味總能把枯燥的日常，變成鄰里間幸福、快樂的「嘉年華會」。在帶給他人快樂的同時，你也為自己注滿了能量。'
+            },
+            E: {
+                emoji: '🎭',
+                title: '戲｜胡撇仔戲伶人型',
+                tagline: '牽引情感的「生命演繹者」',
+                trait: '就像野地上那場色彩斑斕、節奏緊迫、戲肉豐饒的「胡撇仔戲」。你擁有極強的同理心與情感渲染力，不論是舞台上的大悲大喜，還是生活中的起伏，你都全心投入，天生就是情感的發言人。',
+                engine: '人生引擎：「同理與共鳴」。你擅長透過聲音、故事或表情，精準捕捉人性的悲歡，你的真誠能輕易牽引身邊人的眼淚與笑容，在情感交融中釋放生命力。'
+            },
+            F: {
+                emoji: '📚',
+                title: '書｜老書店掌櫃型',
+                tagline: '嚮往更大世界的「知性求索者」',
+                trait: '就像那個利用樓梯、等紅燈等零碎時間熱切讀書，對知識有著極度渴望的詹宏志。你條理清晰、邏輯性強，遇到問題時，習慣假設、推理、找證據來尋求解答。',
+                engine: '人生引擎：「求知的熱忱」。閱讀與思考對你而言就像維持生命運作的養分，你深信書本與知識是探索更大世界的媒介，能給予你勇敢前往未知領域的底氣。'
+            },
+            G: {
+                emoji: '🌸',
+                title: '梅｜雨後的點地梅型',
+                tagline: '歷盡風霜的「韌性復原者」',
+                trait: '就像可樂王筆下那朵「飽含雨露、歷盡風霜，卻在草地上充滿生氣昂揚」的點地梅。你擁有驚人的適應力與復原力，即使生活面臨巨變或失落，你也能在沉澱後再次挺起胸膛。',
+                engine: '人生引擎：「感恩與復原」。當生命列車中陪伴你的人要下車時，你學會了心存感激並揮手道別。暴風雨無法將你擊垮，反而會折射出你生命中最堅強、溫柔的光澤。'
+            }
+        };
+
+        let currentQuestionIndex = 0;
+        let scores = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0 };
+        let finalKey = 'B';
+
+        function hideAll() {
+            ['intro-section', 'quiz-section', 'loading-section', 'result-section', 'conclusion-section']
+                .forEach((id) => document.getElementById(id).classList.add('hidden-section'));
+        }
+
+        function startQuiz() {
+            const className = document.getElementById('input-class').value.trim();
+            const seat = document.getElementById('input-seat').value.trim();
+            const name = document.getElementById('input-name').value.trim();
+            const err = document.getElementById('name-error');
+            if (!className || !seat || !name) {
+                err.classList.remove('hidden-section');
+                return;
+            }
+            err.classList.add('hidden-section');
+            ActivitySubmit.saveStudent({ className, seat, name });
+            currentQuestionIndex = 0;
+            scores = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0 };
+            hideAll();
+            const quiz = document.getElementById('quiz-section');
+            quiz.classList.remove('hidden-section');
+            quiz.classList.add('fade-in');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            document.getElementById('question-counter').textContent =
+                `進度：${currentQuestionIndex + 1} / ${questions.length}`;
+            document.getElementById('progress-bar').style.width =
+                `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
+            document.getElementById('question-text').textContent = q.question;
+
+            const box = document.getElementById('options-container');
+            box.innerHTML = '';
+            q.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'option-btn w-full text-left py-3.5 px-4 border-2 border-pink-100 rounded-2xl bg-white hover:border-rose-400 hover:bg-rose-50 text-rose-950/85 shadow-sm font-medium text-[15px] sm:text-base leading-relaxed';
+                btn.innerHTML = `<span class="font-black text-rose-500 mr-1">${opt.key}.</span>${opt.text}`;
+                btn.onclick = () => selectOption(opt.key);
+                box.appendChild(btn);
+            });
+        }
+
+        function selectOption(key) {
+            scores[key] += 1;
+            currentQuestionIndex += 1;
+            if (currentQuestionIndex < questions.length) {
+                setTimeout(loadQuestion, 120);
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function pickWinner() {
+            let best = 'A';
+            let max = -1;
+            'ABCDEFG'.split('').forEach((k) => {
+                if (scores[k] > max) {
+                    max = scores[k];
+                    best = k;
+                }
+            });
+            return best;
+        }
+
+        function finishQuiz() {
+            hideAll();
+            document.getElementById('loading-section').classList.remove('hidden-section');
+            finalKey = pickWinner();
+            const data = results[finalKey];
+
+            setTimeout(() => {
+                hideAll();
+                const sec = document.getElementById('result-section');
+                sec.classList.remove('hidden-section');
+                sec.classList.add('fade-in');
+                document.getElementById('result-emoji').textContent = data.emoji;
+                document.getElementById('result-title').textContent = data.title;
+                document.getElementById('result-tagline').textContent = data.tagline;
+                document.getElementById('result-desc').innerHTML =
+                    `<p><span class="font-bold text-rose-600">靈魂特質</span><br>${data.trait}</p>` +
+                    `<p><span class="font-bold text-rose-600">人生引擎</span><br>${data.engine}</p>`;
+                document.getElementById('upload-status').textContent = '';
+                submitResult(data);
+            }, 700);
+        }
+
+        function setUploadStatus(msg, kind) {
+            const el = document.getElementById('upload-status');
+            el.textContent = msg;
+            el.className = 'text-xs font-bold min-h-[1.25rem] mb-4 ';
+            if (kind === 'success') el.classList.add('text-green-600');
+            else if (kind === 'error') el.classList.add('text-red-600');
+            else if (kind === 'warn') el.classList.add('text-amber-600');
+            else el.classList.add('text-rose-400');
+        }
+
+        async function submitResult(data) {
+            const resultLabel = `${data.title}｜${data.tagline}`;
+            const extra = JSON.stringify({ scores, winner: finalKey });
+            try {
+                await ActivitySubmit.submit({
+                    activityId: ACTIVITY_ID,
+                    activityName: ACTIVITY_NAME,
+                    result: resultLabel,
+                    extra,
+                    captureEl: document.getElementById('result-section'),
+                    onStatus: setUploadStatus
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function showConclusion() {
+            hideAll();
+            const sec = document.getElementById('conclusion-section');
+            sec.classList.remove('hidden-section');
+            sec.classList.add('fade-in');
+        }
+    </script>
+</body>
+</html>
