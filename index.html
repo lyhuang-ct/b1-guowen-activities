@@ -101,8 +101,13 @@
         }
 
         .credit-badge {
+            left: 50%;
+            transform: translateX(-50%);
             bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
-            right: max(0.75rem, env(safe-area-inset-right, 0px));
+            width: max-content;
+            max-width: calc(100vw - 1.5rem);
+            text-align: center;
+            white-space: normal;
         }
     </style>
 </head>
@@ -136,8 +141,8 @@
         </footer>
     </main>
 
-    <div class="credit-badge fixed text-[10px] sm:text-xs text-morandi-text/80 bg-white/60 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-white/50 pointer-events-none z-50 max-w-[70vw] truncate">
-        本內容由新北市Gemini Education 輔助生成50%
+    <div class="credit-badge fixed text-[10px] sm:text-xs text-morandi-text/80 bg-white/60 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-white/50 pointer-events-none z-50">
+        本內容由新北市Gemini Education 輔助生成40%
     </div>
 
     <script>
