@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    <meta name="theme-color" content="#eef3ec">
+    <link rel="stylesheet" href="shared/mobile.css">
+    <title>聖賢靈魂的鏡子｜論語選讀</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"BpmfGenSenRounded"', '"Noto Sans TC"', 'sans-serif'] },
+                    colors: {
+                        sage: {
+                            soft: '#f3f6f1',
+                            mist: '#e4ebe0',
+                            leaf: '#5f7f68',
+                            deep: '#3d5c4a',
+                            ink: '#2a332c',
+                            gold: '#b89a5a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: "BpmfGenSenRounded", "Noto Sans TC", sans-serif;
+            background:
+                radial-gradient(circle at 10% 12%, rgba(95, 127, 104, 0.16), transparent 40%),
+                radial-gradient(circle at 92% 8%, rgba(184, 154, 90, 0.14), transparent 36%),
+                linear-gradient(180deg, #f7f9f5 0%, #eef3ec 50%, #e6ebe3 100%);
+        }
+        .fade-in { animation: fadeIn 0.7s ease forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hidden-section { display: none; }
+        .loader {
+            border: 4px solid #e4ebe0;
+            border-top: 4px solid #5f7f68;
+            border-radius: 50%;
+            width: 42px; height: 42px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .option-btn {
+            transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+        }
+        .option-btn:active { transform: scale(0.98); }
+        .ink-rule {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(61, 92, 74, 0.35), transparent);
+        }
+    </style>
+</head>
+<body class="min-h-[100dvh] flex items-start sm:items-center justify-center text-sage-ink p-3 sm:p-6">
+
+    <div id="app-container" class="max-w-2xl w-full bg-white/92 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden border border-sage-mist relative fade-in">
+        <div class="h-3 bg-gradient-to-r from-sage-leaf via-sage-deep to-sage-gold"></div>
+
+        <div class="p-5 sm:p-10">
+            <!-- 歡迎 -->
+            <div id="intro-section" class="text-center">
+                <p class="text-sm font-bold tracking-widest text-sage-leaf mb-2">第十二課《論語選讀》</p>
+                <h1 class="text-2xl sm:text-3xl font-black text-sage-deep mb-3 leading-snug">
+                    📖 聖賢靈魂的鏡子
+                </h1>
+                <p class="text-sm sm:text-base text-sage-ink/75 mb-2 leading-relaxed">
+                    孔門十哲人格特質測驗
+                </p>
+                <p class="text-sm text-sage-ink/65 mb-7 leading-relaxed">
+                    請在 5 題情境中，憑直覺選擇最符合你心境、處事原則或價值觀的選項
+                </p>
+
+                <div class="mb-7 w-full max-w-md mx-auto text-left space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-sage-leaf mb-1 text-center">班級 (例: 404)</label>
+                        <input type="text" id="input-class" placeholder="例: 404"
+                               class="w-full px-4 py-3.5 border-2 border-sage-mist rounded-2xl focus:outline-none focus:border-sage-leaf text-center text-base bg-sage-soft">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-sage-leaf mb-1 text-center">座號 (例: 05)</label>
+                        <input type="text" id="input-seat" placeholder="例: 05"
+                               class="w-full px-4 py-3.5 border-2 border-sage-mist rounded-2xl focus:outline-none focus:border-sage-leaf text-center text-base bg-sage-soft">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-sage-leaf mb-1 text-center">姓名</label>
+                        <input type="text" id="input-name" placeholder="請輸入姓名"
+                               class="w-full px-4 py-3.5 border-2 border-sage-mist rounded-2xl focus:outline-none focus:border-sage-leaf text-center text-base bg-sage-soft">
+                    </div>
+                    <p id="name-error" class="hidden-section text-red-700 text-sm font-bold text-center bg-red-50 py-2 rounded-xl">請確實填寫班級、座號與姓名後再開始</p>
+                </div>
+
+                <button type="button" onclick="startQuiz()" class="w-full mobile-cta-full bg-sage-deep hover:bg-sage-leaf text-white font-bold py-4 rounded-full shadow-lg text-lg transition active:scale-95">
+                    開啟鏡子，開始測驗
+                </button>
+            </div>
+
+            <!-- 測驗 -->
+            <div id="quiz-section" class="hidden-section">
+                <div class="mb-5 flex justify-between items-center text-sm font-bold text-sage-leaf">
+                    <span id="question-counter">進度：1 / 5</span>
+                    <div class="w-2/3 bg-sage-mist rounded-full h-2.5 overflow-hidden">
+                        <div id="progress-bar" class="bg-sage-leaf h-2.5 rounded-full transition-all duration-300" style="width: 20%"></div>
+                    </div>
+                </div>
+                <h2 id="question-text" class="text-lg sm:text-xl font-bold text-sage-ink mb-5 leading-relaxed text-left"></h2>
+                <div id="options-container" class="flex flex-col gap-3"></div>
+            </div>
+
+            <!-- 載入 -->
+            <div id="loading-section" class="hidden-section text-center py-14">
+                <div class="loader mb-5"></div>
+                <p class="font-bold text-sage-leaf">孔門賢人正在對鏡映照中…</p>
+            </div>
+
+            <!-- 結果 -->
+            <div id="result-section" class="hidden-section text-center">
+                <p class="text-sm font-bold tracking-widest text-sage-leaf mb-2">測驗結果 · 孔門四科十哲</p>
+                <div class="text-5xl mb-3" id="result-emoji">📖</div>
+                <p id="result-category" class="text-sm font-bold text-sage-gold mb-1"></p>
+                <h2 id="result-title" class="text-2xl sm:text-3xl font-black text-sage-deep mb-2"></h2>
+                <p id="result-tagline" class="text-base font-bold text-sage-leaf mb-5"></p>
+                <div id="result-desc" class="text-sm sm:text-base text-left leading-relaxed bg-sage-soft border border-sage-mist rounded-2xl p-5 mb-4 text-sage-ink/85 space-y-3"></div>
+                <p id="upload-status" data-capture-ignore class="text-xs font-bold text-sage-leaf min-h-[1.25rem] mb-4"></p>
+                <button type="button" onclick="showConclusion()" class="w-full mobile-cta-full bg-sage-gold hover:opacity-90 text-white font-bold py-3.5 rounded-full shadow-md transition active:scale-95">
+                    走進《論語選讀》
+                </button>
+            </div>
+
+            <!-- 課文導入 -->
+            <div id="conclusion-section" class="hidden-section text-center">
+                <h2 class="text-2xl font-black text-sage-deep mb-4">聖賢之鏡，照見己心</h2>
+                <div class="text-sm sm:text-base text-left leading-relaxed text-sage-ink/80 space-y-3 mb-6">
+                    <p>《論語》記錄孔子與弟子言談，德行、言語、政事、文學四科，各見其長。</p>
+                    <p class="bg-sage-soft border-l-4 border-sage-leaf p-4 rounded-r-xl italic">「三人行，必有我師焉。」十哲之德，不是標籤，而是一面讓你對照自我、思考進德修業的鏡子。</p>
+                    <p>帶著你的測驗結果，走進課文，看看哪一位孔門賢人的氣象，最能映照你今日的選擇與志向。</p>
+                </div>
+                <div class="ink-rule mb-4"></div>
+                <h3 class="text-xl sm:text-2xl font-extrabold text-sage-deep py-1">
+                    《論語選讀》
+                </h3>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared/config.js"></script>
+    <script src="shared/activity-submit.js"></script>
+    <script>
+        const ACTIVITY_ID = 'B1L12';
+        const ACTIVITY_NAME = '聖賢靈魂的鏡子';
+
+        function formatRich(text) {
+            return String(text || '').replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-sage-deep">$1</strong>');
+        }
+
+        const questions = [
+            {
+                question: 'Q1. 面對生活中的困境或物質匱乏，你最自然的反應是什麼？',
+                options: [
+                    { key: 'A', text: '毫不在意，即便**「一簞食，一瓢飲，在陋巷」**，也能在精神追求與道德樂趣中安貧樂道。' },
+                    { key: 'B', text: '保持恬淡，不樂仕進，退隱修身，用最謹慎謙恭的態度守護自己的清白與本分。' },
+                    { key: 'C', text: '嘆息這或許是無可奈何的宿命，但依然安然、平靜地承受生命帶來的考驗。' },
+                    { key: 'D', text: '雖然出身或處境不佳，但氣量寬宏、沈默厚重，默默積累實力，自我期許。' },
+                    { key: 'E', text: '敢於直言質疑常規，提出更有效率或更符合人性的務實方案，不盲從傳統禮法。' },
+                    { key: 'F', text: '主動尋求**「貨殖」經商之道**，用出色的口才與社交智慧去解決財務和資源問題。' },
+                    { key: 'G', text: '性情謙退，默默發揮自己的多才多藝，替團隊打理財政或解決實際的庶務。' },
+                    { key: 'H', text: '慷慨豪爽，「願車馬衣輕裘與朋友共，敝之而無憾」，極度重視義氣高於物質。' },
+                    { key: 'I', text: '重視生活的儀式感與和諧，即便處境艱難，也希望用音樂與藝術（弦歌）來溫暖與調劑心靈。' },
+                    { key: 'J', text: '腳踏實地、穩紮穩打（如**「賢賢易色」**），將精力放在自我提升和本分工作上。' }
+                ]
+            },
+            {
+                question: 'Q2. 當你加入一個新團隊時，你最希望在團隊中發揮什麼樣的「影響力」？',
+                options: [
+                    { key: 'A', text: '默默修己，達到**「不遷怒、不貳過」**的修養，用高尚品格與好學精神成為大家無形中的榜樣。' },
+                    { key: 'B', text: '保持低調與敬謹，不與人爭名奪利，以和諧與德行默默感化身邊的人。' },
+                    { key: 'C', text: '扮演安靜的守護者，默默承擔重要責任，對團隊的無常變化處之泰然。' },
+                    { key: 'D', text: '展現包容萬物的大度與領導氣量，雖然不張揚，但讓人感覺**「可使南面」**（具有人君氣度）。' },
+                    { key: 'E', text: '勇於直言、辯才無礙，敢於指出團隊的盲點，打破不合理的教條。' },
+                    { key: 'F', text: '擔任外交官與協調者，長於談判、料事如神，為團隊建立強大的外部合作網絡。' },
+                    { key: 'G', text: '務實幹練，擔任幕後推手，長於行政與財經規劃，讓團隊穩定運作。' },
+                    { key: 'H', text: '擔任急先鋒，為朋友兩肋插刀，說話算話，用行動與勇氣保護大家。' },
+                    { key: 'I', text: '推廣文化與核心價值，主張**「君子學道則愛人」**，用教育與文化和諧凝聚人心。' },
+                    { key: 'J', text: '專注於知識傳承與細節，制訂標準化流程，扮演傳授學問的導師角色。' }
+                ]
+            },
+            {
+                question: 'Q3. 面對別人的錯誤或團隊中的不公義，你通常會採取何種態度？',
+                options: [
+                    { key: 'A', text: '「無伐善，無施勞」，不誇耀自己的好，也不會嚴厲指責他人，默默做好自己。' },
+                    { key: 'B', text: '潔身自愛，不願同流合汙，甚至拒絕與不公義的勢力合作（如拒任季氏宰）。' },
+                    { key: 'C', text: '哀憫世人的不幸，不作無謂的爭執，以溫和且順應天命的心態面對人世的殘缺。' },
+                    { key: 'D', text: '氣量寬宏，不隨意議論他人，用「犁牛之子」的實力與默默耕耘來證明自己。' },
+                    { key: 'E', text: '犀利發問，用雄辯和邏輯（如與孔子論辯「三年之喪」）迫使對方反思常規的合理性。' },
+                    { key: 'F', text: '發揮「言語」之長，靈活游說各方，透過通權達變的智慧來化解人際危機。' },
+                    { key: 'G', text: '權衡現實，即使暫時為強權效力，也會在適當時機尋求最務實的折衷與改善方案。' },
+                    { key: 'H', text: '嫉惡如仇、性率直，即便面臨危險也絕不退縮，勇於挺身維護正義。' },
+                    { key: 'I', text: '重視禮樂法度，溫和地指出「割雞焉用牛刀」的道理，以禮樂教化引導人向善。' },
+                    { key: 'J', text: '強調**「與朋友交，言而有信」**的本分，希望大家各守其職，不可苟且。' }
+                ]
+            },
+            {
+                question: 'Q4. 當你面臨重大的學習、工作或研究任務時，你最偏好的方式是什麼？',
+                options: [
+                    { key: 'A', text: '敏而好學，聞一知十，將學習視為心靈的極致享受，甚至廢寢忘食、欲罷不能。' },
+                    { key: 'B', text: '保持敬謹與謙遜，在實際的德行中體會事理，重質不重量，不急於發表高論。' },
+                    { key: 'C', text: '順其自然，默默守候，安分守己地完成被賦予的任務。' },
+                    { key: 'D', text: '穩紮穩打，注重打好基礎，不因起點低而自暴自棄，展現沉穩氣度。' },
+                    { key: 'E', text: '喜歡質疑權威，進行批判性思考，尋求最具突破性與務實性的新穎觀點。' },
+                    { key: 'F', text: '善於把握重點，融會貫通（聞一知二），並能將理論轉化為實際的成果或外交效益。' },
+                    { key: 'G', text: '雖然極有才藝，但有時在沒有把握時會自我設限（「畫地自限」），需要旁人推一把才敢前進。' },
+                    { key: 'H', text: '渴望實戰，熱愛動態挑戰，比起紙上談兵，更喜歡在「做中學」並勇往直前。' },
+                    { key: 'I', text: '鑽研禮樂典籍，注重文化底蘊與藝術薰陶，講求凡事都要有精緻與美感。' },
+                    { key: 'J', text: '極度專注細節，博覽群書，特別注重學問的傳承（如《詩經》），教學相長。' }
+                ]
+            },
+            {
+                question: 'Q5. 你認為自己最不可被忽視的「核心能力」是什麼？',
+                options: [
+                    { key: 'A', text: '卓越的自我管理與反省能力，能在喧囂中維持心靈的清明與富足。' },
+                    { key: 'B', text: '至孝與純潔的靈魂，對家庭與道德底線有著無可妥協的堅持。' },
+                    { key: 'C', text: '面對生命的缺陷與疾病，依然展現出溫和、寬容、不怨天尤人的尊嚴。' },
+                    { key: 'D', text: '具有包容雜音、統合異見的領袖氣度，能默默贏得眾人的敬重。' },
+                    { key: 'E', text: '優秀的思辨力與語言表達力，能看穿不合時宜的體制並敢於發聲。' },
+                    { key: 'F', text: '長袖善舞的外交手腕與經商智慧，能解決複雜的資源與人際衝突。' },
+                    { key: 'G', text: '卓越的行政、財政與實務執行力，能將理想落地為具體可行的政策。' },
+                    { key: 'H', text: '堅守承諾、熱血澎湃的行動力，為了守護核心信念（如結纓而死）可以義無反顧。' },
+                    { key: 'I', text: '弘揚美學與和諧的能力，懂得用藝術（弦歌之聲）與人文關懷溫暖冰冷的世界。' },
+                    { key: 'J', text: '嚴謹的學術精神與耐性，能系統化整理、傳承並教導複雜的知識。' }
+                ]
+            }
+        ];
+
+        const results = {
+            A: {
+                emoji: '🎨',
+                category: '🌟 德行科 · 品格高尚，屹立不搖',
+                title: 'A. 顏淵（顏回）',
+                tagline: '靈魂洗滌的「安貧樂道者」',
+                trait: '敏而好學，聞一知十。你擁有孔門中最純淨的靈魂，能做到**「不遷怒、不貳過」與「無伐善，無施勞」**。外界的貧富對你而言如浮雲，你總能在簡陋的環境中（一簞食，一瓢飲）守護內心的清明與喜悅。',
+                insight: '你的存在本身就是一種德行的光輝，能以高尚的品德默默影響他人。'
+            },
+            B: {
+                emoji: '🕯️',
+                category: '🌟 德行科 · 品格高尚，屹立不搖',
+                title: 'B. 閔子騫（閔損）',
+                tagline: '守護底線的「清廉至孝者」',
+                trait: '孝順父母，友愛兄弟，極富德行。你敬謹謙恭、性情恬淡，不樂仕進，更不願與不義的權貴合作。你對待生命與家庭有著最真摯的誠敬，是個言行如一、極具風骨的自律者。',
+                insight: '你的高潔在於「有所不為」，不為名利折腰，守護心靈的純淨。'
+            },
+            C: {
+                emoji: '🍂',
+                category: '🌟 德行科 · 品格高尚，屹立不搖',
+                title: 'C. 冉伯牛（冉耕）',
+                tagline: '接受命運的「默然守護者」',
+                trait: '以德行著稱。在遭遇生命的不幸、疾病或巨變時，你展現出溫和且高貴的尊嚴，安然承受宿命的無常。你不抱怨、不喧嘩，在生命的幽谷中依然保持著溫厚的靈魂。',
+                insight: '面對命運的風雨，你無聲的堅韌與寬容就是最深沉的德行。'
+            },
+            D: {
+                emoji: '🧱',
+                category: '🌟 德行科 · 品格高尚，屹立不搖',
+                title: 'D. 仲弓（冉雍）',
+                tagline: '犁牛之子的「南面之才」',
+                trait: '氣量寬宏，沈默厚重。雖然出身可能微賤（如**「犁牛之子，騂且角」**），但你從不妄自菲薄。你展現出沉穩、包容的恢弘格局，被孔子高度評價為**「可使南面」**，具有領袖人君的非凡氣度。',
+                insight: '起點無法限制你，你的寬厚胸襟與實力終將讓你脫穎而出。'
+            },
+            E: {
+                emoji: '⚡',
+                category: '🗣️ 言語科 · 溝通協調，闡明聖道',
+                title: 'E. 宰我（宰予）',
+                tagline: '挑戰常規的「批判性思考者」',
+                trait: '善為說辭，深於自信。你不喜歡盲從，敢於向既有的社會體制（如「三年之喪」）提出理性的質疑。你具有靈活的思辨力，善於透過言語和論辯，迫使人們在僵化的常規中尋求更務實的解答。',
+                insight: '你是團隊中的破局者，敢於質疑，才能為世界帶來新的活氣。'
+            },
+            F: {
+                emoji: '💼',
+                category: '🗣️ 言語科 · 溝通協調，闡明聖道',
+                title: 'F. 子貢（端木賜）',
+                tagline: '長袖善舞的「外交企業家」',
+                trait: '有口才，能料事，且長於外交，善於「貨殖」經商。在孔門中，你極富實踐智慧，能洞察市場先機且「億則屢中」。你將語言的天賦發揮在外交斡旋與商業運作上，為團隊解決實際的危機。',
+                insight: '你的才華在於能將高遠的理想，轉化為人際與物質上的非凡成果。'
+            },
+            G: {
+                emoji: '📐',
+                category: '⚔️ 政事科 · 致力實務，安定環境',
+                title: 'G. 冉有（冉求）',
+                tagline: '實事求是的「行政理務專家」',
+                trait: '性謙退，有才藝，尤長於政事與理財。你是一位務實的實幹家，擅長在幕後規劃、調配資源，解決具體的行政問題。雖然你偶爾會給自己「畫地自限」，但你的專業與執行力是團隊運作不可或缺的基石。',
+                insight: '學會相信自己的能力，你的實務手腕能將一切混亂理出秩序。'
+            },
+            H: {
+                emoji: '🛡️',
+                category: '⚔️ 政事科 · 致力實務，安定環境',
+                title: 'H. 子路（仲由）',
+                tagline: '義氣當先的「熱血捍衛者」',
+                trait: '性率直，好勇有政才，志高重信。你充滿激情與行動力，是個為朋友不惜奉獻一切的「帶刀侍衛」。你講求誠信，甚至在面臨生死考驗時，依然能堅守心中的大義與承諾（「結纓而死」）。',
+                insight: '你的勇敢無畏需要「好謀而成」的理智配合，才能成為守護正義的最強力量。'
+            },
+            I: {
+                emoji: '🎻',
+                category: '🎨 文學科 · 文化底蘊，涵養人心',
+                title: 'I. 子游（言偃）',
+                tagline: '弘揚美學的「禮樂教化者」',
+                trait: '性簡約疏闊，深熟禮學。你深信文化、藝術與音樂（弦歌之聲）具有感化人心、消弭暴戾的力量。你反對殺雞用牛刀的粗暴，主張在日常生活中用精緻的禮教與人文底蘊，來提升群體的生命價值。',
+                insight: '你的溫柔能撫平粗糙的現實，用美感與溫度灌溉冰冷的世界。'
+            },
+            J: {
+                emoji: '📚',
+                category: '🎨 文學科 · 文化底蘊，涵養人心',
+                title: 'J. 子夏（卜商）',
+                tagline: '西河設教的「文化傳承者」',
+                trait: '熟習經學，在孔門中極具文化傳承的耐力（如《詩經》）。你務實、嚴謹，在晚年設教於西河之上，成為名重一時的導師。你強調日常學習的積累（「日新」），用系統化的知識指引後進。',
+                insight: '你的價值在於「承先啟後」，在恆常的鑽研中，點亮智慧的火炬。'
+            }
+        };
+
+        let currentQuestionIndex = 0;
+        let scores = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0, I: 0, J: 0 };
+        let finalKey = 'A';
+
+        function hideAll() {
+            ['intro-section', 'quiz-section', 'loading-section', 'result-section', 'conclusion-section']
+                .forEach((id) => document.getElementById(id).classList.add('hidden-section'));
+        }
+
+        function emptyScores() {
+            return { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0, I: 0, J: 0 };
+        }
+
+        function startQuiz() {
+            const className = document.getElementById('input-class').value.trim();
+            const seat = document.getElementById('input-seat').value.trim();
+            const name = document.getElementById('input-name').value.trim();
+            const err = document.getElementById('name-error');
+            if (!className || !seat || !name) {
+                err.classList.remove('hidden-section');
+                return;
+            }
+            err.classList.add('hidden-section');
+            ActivitySubmit.saveStudent({ className, seat, name });
+            currentQuestionIndex = 0;
+            scores = emptyScores();
+            hideAll();
+            const quiz = document.getElementById('quiz-section');
+            quiz.classList.remove('hidden-section');
+            quiz.classList.add('fade-in');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            document.getElementById('question-counter').textContent =
+                `進度：${currentQuestionIndex + 1} / ${questions.length}`;
+            document.getElementById('progress-bar').style.width =
+                `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
+            document.getElementById('question-text').textContent = q.question;
+
+            const box = document.getElementById('options-container');
+            box.innerHTML = '';
+            q.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'option-btn w-full text-left py-3.5 px-4 border-2 border-sage-mist rounded-2xl bg-white hover:border-sage-leaf hover:bg-sage-soft text-sage-ink/85 shadow-sm font-medium text-[15px] sm:text-base leading-relaxed';
+                btn.innerHTML = `<span class="font-black text-sage-leaf mr-1">${opt.key}.</span>${formatRich(opt.text)}`;
+                btn.onclick = () => selectOption(opt.key);
+                box.appendChild(btn);
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectOption(key) {
+            scores[key] += 1;
+            currentQuestionIndex += 1;
+            if (currentQuestionIndex < questions.length) {
+                setTimeout(loadQuestion, 120);
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function pickWinner() {
+            let best = 'A';
+            let max = -1;
+            'ABCDEFGHIJ'.split('').forEach((k) => {
+                if (scores[k] > max) {
+                    max = scores[k];
+                    best = k;
+                }
+            });
+            return best;
+        }
+
+        function finishQuiz() {
+            hideAll();
+            document.getElementById('loading-section').classList.remove('hidden-section');
+            finalKey = pickWinner();
+            const data = results[finalKey];
+
+            setTimeout(() => {
+                hideAll();
+                const sec = document.getElementById('result-section');
+                sec.classList.remove('hidden-section');
+                sec.classList.add('fade-in');
+                document.getElementById('result-emoji').textContent = data.emoji;
+                document.getElementById('result-category').textContent = data.category;
+                document.getElementById('result-title').textContent = data.title;
+                document.getElementById('result-tagline').textContent = data.tagline;
+                document.getElementById('result-desc').innerHTML =
+                    `<p><span class="font-bold text-sage-deep">賢人特質</span><br>${formatRich(data.trait)}</p>` +
+                    `<p><span class="font-bold text-sage-deep">靈魂啟示</span><br>${formatRich(data.insight)}</p>`;
+                document.getElementById('upload-status').textContent = '';
+                submitResult(data);
+            }, 700);
+        }
+
+        function setUploadStatus(msg, kind) {
+            const el = document.getElementById('upload-status');
+            el.textContent = msg;
+            el.className = 'text-xs font-bold min-h-[1.25rem] mb-4 ';
+            if (kind === 'success') el.classList.add('text-green-700');
+            else if (kind === 'error') el.classList.add('text-red-600');
+            else if (kind === 'warn') el.classList.add('text-amber-700');
+            else el.classList.add('text-sage-leaf');
+        }
+
+        async function submitResult(data) {
+            const resultLabel = `${data.title}｜${data.tagline}`;
+            const extra = JSON.stringify({ scores, winner: finalKey, category: data.category });
+            try {
+                await ActivitySubmit.submit({
+                    activityId: ACTIVITY_ID,
+                    activityName: ACTIVITY_NAME,
+                    result: resultLabel,
+                    extra,
+                    captureEl: document.getElementById('result-section'),
+                    onStatus: setUploadStatus
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function showConclusion() {
+            hideAll();
+            const sec = document.getElementById('conclusion-section');
+            sec.classList.remove('hidden-section');
+            sec.classList.add('fade-in');
+        }
+    </script>
+</body>
+</html>
