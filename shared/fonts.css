@@ -1,0 +1,71 @@
+/**
+ * 全站注音字型：Bpmf GenSen Rounded
+ * Regular: shared/fonts/BpmfGenSenRounded-R.ttf
+ * Bold:    shared/fonts/BpmfGenSenRounded-B.ttf
+ */
+@font-face {
+  font-family: "BpmfGenSenRounded";
+  src: url("./fonts/BpmfGenSenRounded-R.ttf") format("truetype");
+  font-weight: 100 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "BpmfGenSenRounded";
+  src: url("./fonts/BpmfGenSenRounded-B.ttf") format("truetype");
+  font-weight: 600 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --app-font: "BpmfGenSenRounded", "Noto Sans TC", sans-serif;
+  /* 覆寫各活動頁自訂變數，統一注音字型 */
+  --font-cute: var(--app-font);
+  --font-serif: var(--app-font);
+  --font-sans: var(--app-font);
+}
+
+html,
+body,
+button,
+input,
+textarea,
+select,
+label,
+a,
+p,
+h1, h2, h3, h4, h5, h6,
+li,
+span,
+div,
+.font-sans,
+.font-serif,
+.font-serif-tc,
+.font-cute,
+.vintage-theme,
+.teacher-theme {
+  font-family: var(--app-font) !important;
+}
+
+/* 注音字型字形較高，拉開行高避免上下相撞 */
+body {
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+}
+
+h1, h2, h3,
+.font-bold,
+.font-semibold,
+.font-extrabold,
+.font-black,
+b,
+strong {
+  font-weight: 700;
+}
+
+.font-medium,
+.font-normal {
+  font-weight: 400;
+}

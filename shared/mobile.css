@@ -2,6 +2,8 @@
  * 學生手機瀏覽共用優化
  * 請在各活動頁 <head> 引入：<link rel="stylesheet" href="shared/mobile.css">
  */
+@import url("./fonts.css");
+
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
